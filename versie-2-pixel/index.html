@@ -31,7 +31,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:15
 /* ---------- ROLLING PIXEL (left edge) ---------- */
 .roller-rail{position:fixed;left:30px;top:8vh;bottom:8vh;width:2px;z-index:150;pointer-events:none;
   background-image:linear-gradient(var(--line) 50%, transparent 50%);background-size:2px 12px}
-.roller{position:absolute;left:50%;top:0;width:20px;height:20px;transform:translate(-50%,-50%);transition:background-color .4s}
+.roller{position:absolute;left:50%;top:0;width:20px;height:20px;transform:translate(-50%,-50%);transition:background-color .3s}
 .roller .face{position:absolute;inset:0;background:inherit}
 .roller .eye{position:absolute;width:4px;height:4px;background:var(--paper);top:5px;transition:.3s}
 .roller .eye.l{left:4px}
@@ -40,7 +40,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:15
 @media(max-width:900px){.roller-rail,.roller-count{display:none}}
 
 /* ---------- NAV ---------- */
-nav{position:fixed;inset:0 0 auto 0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 36px;transition:.4s}
+nav{position:fixed;inset:0 0 auto 0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 36px;transition:.3s}
 nav.scrolled{background:rgba(245,242,236,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .wordmark{display:block;line-height:0}
 .wordmark img{height:24px;display:block}
@@ -92,7 +92,7 @@ section{position:relative}
 .eyebrow.g i{background:var(--green)}
 h2{font-family:var(--fd);font-weight:800;font-size:clamp(34px,5vw,72px);line-height:.98;letter-spacing:-.025em;text-transform:uppercase;margin:0}
 h2 .stroke{color:transparent;-webkit-text-stroke:1.8px var(--ink)}
-.reveal{opacity:0;transform:translateY(44px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .28s ease-out,transform .28s ease-out}
 .reveal.in{opacity:1;transform:none}
 
 /* ---------- ABOUT ---------- */
@@ -167,7 +167,7 @@ h2 .stroke{color:transparent;-webkit-text-stroke:1.8px var(--ink)}
   radial-gradient(600px 300px at 50% 100%, rgba(247,107,33,.15), transparent 70%), var(--paper)}
 .contact h2{margin-bottom:22px}
 .contact p{color:var(--dim);max-width:480px;margin:0 auto 42px;font-size:17px;line-height:1.7}
-.big-btn{display:inline-block;font-family:var(--fd);font-weight:800;font-size:clamp(18px,2.4vw,28px);text-transform:uppercase;letter-spacing:-.01em;color:var(--ink);background:var(--green);border:2px solid var(--ink);border-radius:100px;padding:22px 54px;text-decoration:none;box-shadow:0 8px 0 var(--ink);transition:.18s}
+.big-btn{display:inline-block;font-family:var(--fd);font-weight:800;font-size:clamp(18px,2.4vw,28px);text-transform:uppercase;letter-spacing:-.01em;color:var(--ink);background:var(--green);border:2px solid var(--ink);border-radius:100px;padding:22px 54px;text-decoration:none;box-shadow:0 8px 0 var(--ink);transition:.2s ease-out}
 .big-btn:hover{transform:translateY(4px);box-shadow:0 4px 0 var(--ink);background:var(--orange);color:#fff}
 
 /* ---------- FOOTER ---------- */
@@ -393,10 +393,10 @@ function rollerTick() {
     lastIdx = idx;
     roller.style.backgroundColor = rColors[idx % rColors.length];
     rollerCount.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(rSections.length).padStart(2,'0');
-    // squash & stretch bounce on section change
+    // subtle pulse on section change
     roller.animate([
-      {scale:'1 1'},{scale:'1.45 .6'},{scale:'.75 1.3'},{scale:'1 1'}
-    ], {duration:450, easing:'cubic-bezier(.34,1.56,.64,1)', composite:'add'});
+      {scale:'1'},{scale:'1.12'},{scale:'1'}
+    ], {duration:250, easing:'ease-out', composite:'add'});
   }
   requestAnimationFrame(rollerTick);
 }

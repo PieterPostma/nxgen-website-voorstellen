@@ -34,15 +34,15 @@ body{background:var(--night);color:var(--ink);font-family:var(--fb);font-weight:
 @keyframes compSway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
 .reed-comp svg{width:100%;height:100%;overflow:visible}
 .reed-comp .stem{stroke:var(--green);stroke-width:3;fill:none;stroke-linecap:round}
-.reed-comp .leaf{fill:var(--green);opacity:.85;transform-origin:var(--ox) var(--oy);transform:scale(0);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.reed-comp .leaf{fill:var(--green);opacity:.85;transform-origin:var(--ox) var(--oy);transform:scale(0);transition:transform .3s ease-out}
 .reed-comp .leaf.open{transform:scale(1)}
-.reed-comp .plume{fill:var(--orange);transform-origin:50% 100%;transform:scale(0);transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
+.reed-comp .plume{fill:var(--orange);transform-origin:50% 100%;transform:scale(0);transition:transform .3s ease-out}
 .reed-comp .plume.open{transform:scale(1)}
 .reed-pct{position:fixed;left:22px;bottom:2vh;z-index:95;font-family:var(--fd);font-style:italic;font-size:12px;color:var(--dim);pointer-events:none}
 @media(max-width:900px){.reed-comp,.reed-pct{display:none}}
 
 /* ---------- NAV ---------- */
-nav{position:fixed;inset:0 0 auto 0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;transition:.4s;border-bottom:1px solid transparent}
+nav{position:fixed;inset:0 0 auto 0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;transition:.3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(19,21,18,.85);backdrop-filter:blur(12px);border-bottom-color:var(--line)}
 nav .logo img{height:24px;display:block}
 nav ul{display:flex;gap:30px;list-style:none;align-items:center}
@@ -90,7 +90,7 @@ nav .cta:hover{background:var(--green);color:var(--night)}
 .chapter .tags span{font-size:12px;line-height:1.25;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:100px;padding:7px 14px;color:var(--dim)}
 .viz{position:relative;aspect-ratio:1;max-width:520px;width:100%;margin:0 auto}
 .viz svg{width:100%;height:100%;display:block;overflow:visible}
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .28s ease-out,transform .28s ease-out}
 .reveal.in{opacity:1;transform:none}
 
 /* ch1 growing reeds */
