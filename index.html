@@ -11,19 +11,19 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;font-weight:300;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px}
 img.logo{height:34px;margin-bottom:36px}
-h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(28px,4vw,48px);text-align:center;margin-bottom:10px}
+h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.1;text-align:center;margin-bottom:10px}
 h1 em{font-style:italic;color:var(--green)}
-p.sub{color:var(--dim);margin-bottom:54px;text-align:center;max-width:520px;line-height:1.7}
+p.sub{color:var(--dim);font-size:15px;margin-bottom:54px;text-align:center;max-width:520px;line-height:1.7}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;width:100%}
 @media(max-width:900px){.cards{grid-template-columns:1fr}}
 a.card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);border-radius:16px;padding:34px 30px;text-decoration:none;color:var(--ink);transition:.3s;background:rgba(255,255,255,.02)}
 a.card:hover{transform:translateY(-6px);border-color:var(--green)}
 a.card:nth-child(2):hover{border-color:var(--orange)}
-.n{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--orange)}
+.n{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--orange)}
 a.card:nth-child(1) .n{color:var(--green)}
-h2{font-family:'Fraunces',serif;font-weight:400;font-size:26px}
-a.card p{color:var(--dim);font-size:14px;line-height:1.7;flex:1}
-.go{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--green)}
+h2{font-family:'Fraunces',serif;font-weight:400;font-size:26px;line-height:1.15}
+a.card p{color:var(--dim);font-size:15px;line-height:1.6;flex:1}
+.go{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}
 a.card:nth-child(2) .go{color:var(--orange)}
 </style>
 </head>
