@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NxGen — Opening any door in Web3</title>
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141414;
+  --bg2:#1a1a1a;
+  --panel:#202020;
+  --ink:#f4f2ee;
+  --dim:#9a978f;
+  --orange:#f76b21;
+  --green:#23d892;
+  --line:rgba(244,242,238,.1);
+  --font-d:'Unbounded',sans-serif;
+  --font-b:'Archivo',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-weight:300;overflow-x:hidden}
+::selection{background:var(--orange);color:#141414}
+
+/* ---------- SCROLL COMPANION (left rail) ---------- */
+.companion{position:fixed;left:34px;top:50%;transform:translateY(-50%);height:58vh;z-index:95;display:flex;gap:14px;align-items:stretch;pointer-events:none}
+.comp-track{position:relative;width:2px;background:rgba(244,242,238,.12)}
+.comp-trail{position:absolute;top:0;left:0;width:100%;height:0;background:linear-gradient(var(--green),var(--orange))}
+.comp-traveler{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);width:14px;height:14px}
+.comp-traveler i{position:absolute;width:6px;height:6px;transition:transform .3s}
+.comp-traveler i:nth-child(1){left:0;top:0;background:var(--green)}
+.comp-traveler i:nth-child(2){right:0;top:0;background:var(--ink)}
+.comp-traveler i:nth-child(3){left:0;bottom:0;background:var(--ink)}
+.comp-traveler i:nth-child(4){right:0;bottom:0;background:var(--orange)}
+.comp-meta{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start}
+.comp-pct{font-family:var(--font-d);font-size:11px;color:var(--dim);letter-spacing:.1em}
+.comp-sec{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--dim);transition:color .4s}
+.comp-sec.hot{color:var(--green)}
+@media(max-width:900px){.companion{display:none}}
+
+/* ---------- NAV ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;mix-blend-mode:normal;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(20,20,20,.82);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+nav .logo img{height:26px;display:block}
+nav ul{display:flex;gap:34px;list-style:none;align-items:center}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.14em;text-transform:uppercase;position:relative;padding:4px 0}
+nav a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--green);transition:width .3s cubic-bezier(.77,0,.18,1)}
+nav a:hover::after{width:100%}
+nav .cta{border:1px solid var(--orange);color:var(--orange);padding:9px 18px}
+nav .cta::after{display:none}
+nav .cta:hover{background:var(--orange);color:#141414;transition:.25s}
+@media(max-width:760px){nav ul{gap:16px} nav a{font-size:11px} nav{padding:16px 20px}}
+
+/* ---------- PORTAL HERO ---------- */
+.portal-wrap{height:340vh;position:relative}
+.portal-stage{position:sticky;top:0;height:100vh;overflow:hidden;perspective:900px;background:
+  radial-gradient(1200px 600px at 50% 120%, rgba(247,107,33,.10), transparent 60%),
+  radial-gradient(900px 500px at 50% -10%, rgba(35,216,146,.07), transparent 60%),
+  var(--bg)}
+.grid-floor{position:absolute;inset:auto 0 0 0;height:46vh;
+  background-image:linear-gradient(rgba(244,242,238,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(244,242,238,.06) 1px,transparent 1px);
+  background-size:64px 64px;
+  transform:perspective(600px) rotateX(62deg);transform-origin:top center;
+  mask-image:linear-gradient(to bottom,transparent,#000 30%);pointer-events:none}
+.door-tunnel{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+.door-frame{position:absolute;left:50%;top:50%;width:min(46vw,420px);height:min(72vh,600px);transform-style:preserve-3d}
+.door-frame .edge{position:absolute;background:currentColor}
+.door-frame .edge.t{top:0;left:0;right:0;height:10px}
+.door-frame .edge.b{bottom:0;left:0;right:0;height:10px}
+.door-frame .edge.l{top:0;bottom:0;left:0;width:10px}
+.door-frame .edge.r{top:0;bottom:0;right:0;width:10px}
+/* pixel notches — echo of the logo X blocks */
+.door-frame .px{position:absolute;width:18px;height:18px}
+.door-frame .px.a{top:-18px;left:22%;background:var(--green)}
+.door-frame .px.b{top:-18px;right:14%;background:var(--orange)}
+.door-frame .px.c{bottom:-18px;left:10%;background:var(--orange)}
+.door-frame .px.d{bottom:-18px;right:24%;background:var(--green)}
+.hero-copy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5;padding:0 24px}
+.hero-copy::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,1100px);height:86vh;background:radial-gradient(closest-side,rgba(20,20,20,.99) 40%,rgba(20,20,20,.92) 60%,transparent 82%);z-index:-1;pointer-events:none}
+.hero-copy h1,.hero-sub,.hero-kicker{text-shadow:0 0 18px rgba(20,20,20,.95),0 2px 40px rgba(20,20,20,.9)}
+.hero-kicker{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--green);margin-bottom:26px}
+.hero-copy h1{font-family:var(--font-d);font-weight:600;font-size:clamp(34px,6vw,84px);line-height:1.04;text-transform:uppercase;letter-spacing:.01em}
+.hero-copy h1 .l2{display:block;color:#141414;-webkit-text-stroke:1.5px var(--ink)}
+.hero-copy h1 .l3{display:block;color:var(--orange)}
+.hero-sub{margin-top:30px;max-width:540px;color:var(--dim);font-size:16px;line-height:1.7}
+.scroll-hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:var(--dim);z-index:6}
+.scroll-hint::after{content:'';display:block;width:1px;height:44px;margin:12px auto 0;background:linear-gradient(var(--ink),transparent);animation:drip 1.8s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.beyond{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:4;opacity:0}
+.beyond .inner{text-align:center;max-width:760px;padding:0 24px;position:relative}
+.beyond .inner::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:130%;height:190%;background:radial-gradient(closest-side,rgba(20,20,20,.95),rgba(20,20,20,.7) 55%,transparent 78%);z-index:-1;pointer-events:none}
+.beyond .inner p{text-shadow:0 0 18px rgba(20,20,20,.95),0 2px 40px rgba(20,20,20,.9)}
+.beyond .inner p.big{font-family:var(--font-d);font-weight:400;font-size:clamp(20px,3vw,36px);line-height:1.35;text-transform:uppercase}
+.beyond .inner p.big em{font-style:normal;color:var(--green)}
+.beyond .inner p.small{margin-top:22px;color:var(--dim);letter-spacing:.3em;text-transform:uppercase;font-size:11px}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:7;pointer-events:none}
+
+/* ---------- SHARED SECTION CHROME ---------- */
+section{position:relative}
+.shell{max-width:1240px;margin:0 auto;padding:120px 40px}
+@media(max-width:760px){.shell{padding:80px 20px}}
+.sec-tag{display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--dim);margin-bottom:22px}
+.sec-tag::before{content:'';width:12px;height:12px;background:var(--orange)}
+.sec-tag.g::before{background:var(--green)}
+h2{font-family:var(--font-d);font-weight:600;font-size:clamp(28px,4vw,54px);text-transform:uppercase;line-height:1.08;margin-bottom:18px}
+.reveal{opacity:0;transform:translateY(38px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- ABOUT ---------- */
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:start}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+.about-grid p.lead{font-size:clamp(17px,1.5vw,21px);line-height:1.75;color:var(--ink)}
+.about-grid p.lead strong{color:var(--orange);font-weight:500}
+.keys{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.key{background:var(--bg2);padding:26px 28px;display:flex;gap:20px;align-items:baseline;transition:background .3s}
+.key:hover{background:#232323}
+.key .n{font-family:var(--font-d);font-size:13px;color:var(--green)}
+.key h3{font-size:15px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
+.key p{color:var(--dim);font-size:14px;line-height:1.6}
+
+/* ---------- MARQUEE ---------- */
+.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:26px 0;background:var(--bg2)}
+.marquee .track{display:flex;gap:64px;width:max-content;animation:mq 40s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+.marquee span{font-family:var(--font-d);font-weight:300;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.marquee span b{color:var(--green);font-weight:300;margin-right:64px}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- TEAM ---------- */
+.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:56px}
+@media(max-width:1000px){.team-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+.member{position:relative;border:1px solid var(--line);background:var(--bg2);overflow:hidden}
+.member .ph{aspect-ratio:4/5;overflow:hidden;filter:grayscale(1) contrast(1.05);transition:filter .5s}
+.member:hover .ph{filter:grayscale(0)}
+.member .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.02);transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.member:hover .ph img{transform:scale(1.08)}
+.member .meta{padding:16px 16px 18px;border-top:1px solid var(--line)}
+.member .meta .role{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+.member.adv .meta .role{color:var(--green)}
+.member .meta h3{font-family:var(--font-d);font-weight:400;font-size:17px}
+.member .meta p{font-size:12px;color:var(--dim);margin-top:5px;line-height:1.5}
+.member .corner{position:absolute;top:0;right:0;width:14px;height:14px;background:var(--green);transform:translate(100%,-100%);transition:transform .3s}
+.member:hover .corner{transform:none}
+
+/* ---------- REFERENCES ---------- */
+.refs{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:56px;max-width:980px}
+@media(max-width:900px){.refs{grid-template-columns:1fr}}
+.ref{border:1px solid var(--line);background:var(--bg2);padding:34px 30px;display:flex;flex-direction:column;gap:22px;position:relative;transition:border-color .3s,transform .3s}
+.ref:hover{border-color:var(--orange);transform:translateY(-4px)}
+.ref .q{font-family:var(--font-d);font-weight:300;color:var(--orange);font-size:34px;line-height:1}
+.ref p{font-size:15px;line-height:1.75;color:var(--ink);flex:1}
+.ref .who{border-top:1px solid var(--line);padding-top:18px}
+.ref .who b{display:block;font-weight:600;font-size:14px;letter-spacing:.04em}
+.ref .who span{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.16em}
+.ref .who .co{color:var(--green)}
+
+/* ---------- PORTFOLIO ---------- */
+.port-cat{margin-top:64px}
+.port-cat h3{font-family:var(--font-d);font-weight:400;font-size:15px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.port-cat h3::after{content:'';flex:1;height:1px;background:var(--line)}
+.port-cat h3 .sq{width:10px;height:10px;background:var(--orange)}
+.port-cat:nth-child(even) h3 .sq{background:var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1px solid var(--line);padding:11px 18px;font-size:13px;letter-spacing:.06em;color:var(--ink);background:var(--bg2);transition:.25s;cursor:default}
+.chip:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px)}
+.port-cat.vc .chip:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ---------- QUOTE / CONTACT ---------- */
+.quote-band{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.quote-band blockquote{font-family:var(--font-d);font-weight:300;font-size:clamp(18px,2.4vw,30px);line-height:1.5;max-width:900px}
+.quote-band blockquote em{font-style:normal;color:var(--green)}
+.quote-band cite{display:block;margin-top:26px;font-family:var(--font-b);font-style:normal;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.contact{text-align:center}
+.contact h2 span{color:var(--orange)}
+.contact p{color:var(--dim);max-width:520px;margin:0 auto 40px;line-height:1.7}
+.btn-door{display:inline-block;position:relative;font-family:var(--font-d);font-weight:400;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:#141414;background:var(--orange);padding:20px 46px;text-decoration:none;overflow:hidden;transition:color .3s}
+.btn-door::before{content:'';position:absolute;inset:0;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.77,0,.18,1);z-index:0}
+.btn-door:hover::before{transform:scaleX(1)}
+.btn-door span{position:relative;z-index:1}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--line);padding:60px 40px 40px;background:var(--bg)}
+.foot-grid{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:44px}
+@media(max-width:760px){.foot-grid{grid-template-columns:1fr}}
+footer img.flogo{height:24px;margin-bottom:20px}
+footer p{color:var(--dim);font-size:13px;line-height:1.7;max-width:340px}
+footer h4{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);margin-bottom:16px}
+footer ul{list-style:none}
+footer ul li{margin-bottom:10px}
+footer a{color:var(--ink);text-decoration:none;font-size:14px;transition:color .25s}
+footer a:hover{color:var(--green)}
+.foot-base{max-width:1240px;margin:48px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div class="companion" aria-hidden="true">
+  <div class="comp-track">
+    <div class="comp-trail" id="compTrail"></div>
+    <div class="comp-traveler" id="compTraveler"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="comp-meta">
+    <span class="comp-sec" id="compSec">The door</span>
+    <span class="comp-pct" id="compPct">00%</span>
+  </div>
+</div>
+
+<nav id="nav">
+  <a class="logo" href="#top"><img src="../assets/logo-white.svg" alt="NxGen"></a>
+  <ul>
+    <li><a href="#references">References</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li>
+    <li><a class="cta" href="#contact">Knock</a></li>
+  </ul>
+</nav>
+
+<!-- =============== PORTAL HERO =============== -->
+<div class="portal-wrap" id="top">
+  <div class="portal-stage">
+    <div class="grid-floor"></div>
+    <div class="door-tunnel" id="tunnel"></div>
+    <div class="hero-copy" id="heroCopy">
+      <div class="hero-kicker">Web3 Advisory &amp; Multi-Family Office</div>
+      <h1>
+        Opening
+        <span class="l2">any door</span>
+        <span class="l3">in Web3</span>
+      </h1>
+      <p class="hero-sub">Customized advisory and curated introductions throughout every go-to-market phase — from first investor to final launch.</p>
+    </div>
+    <div class="beyond" id="beyond">
+      <div class="inner">
+        <p class="big">Behind every door is a <em>person we already know.</em></p>
+        <p class="small">A decade of connecting people in Web3</p>
+      </div>
+    </div>
+    <div class="flash" id="flash"></div>
+    <div class="scroll-hint">Scroll through</div>
+  </div>
+</div>
+
+<!-- =============== ABOUT =============== -->
+<section id="about">
+  <div class="shell">
+    <div class="sec-tag reveal">What we do</div>
+    <div class="about-grid">
+      <div class="reveal">
+        <h2>Advisory that starts before the seed.</h2>
+        <p class="lead">NxGen provides <strong>customized advisory and curated introductions</strong> throughout your go-to-market phases — connecting you with investors and service providers such as market makers, DEXs, CEXs, key opinion leaders, auditors and launchpads. Through our multi-family office we invest in every founder we work with, beginning at the earliest stages.</p>
+      </div>
+      <div class="keys reveal">
+        <div class="key"><span class="n">01</span><div><h3>Curated introductions</h3><p>Investors, market makers, DEXs, CEXs, KOLs, auditors and launchpads — the right person, at the right moment.</p></div></div>
+        <div class="key"><span class="n">02</span><div><h3>Go-to-market advisory</h3><p>Hands-on guidance through every phase of your launch, tailored to your protocol.</p></div></div>
+        <div class="key"><span class="n">03</span><div><h3>Skin in the game</h3><p>Our multi-family office invests in every founder we work with — from the early stages onward.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track" id="mqTrack">
+    <span><b>◆</b>Investors</span><span><b>◆</b>Market Makers</span><span><b>◆</b>DEXs</span><span><b>◆</b>CEXs</span><span><b>◆</b>Key Opinion Leaders</span><span><b>◆</b>Auditors</span><span><b>◆</b>Launchpads</span>
+  </div>
+</div>
+
+<!-- =============== REFERENCES =============== -->
+<section id="references" style="background:var(--bg2)">
+  <div class="shell">
+    <div class="sec-tag reveal">References</div>
+    <h2 class="reveal">Founders who walked<br>through with us.</h2>
+    <div class="refs">
+      <div class="ref reveal"><div class="q">“</div><p>The NxGen team has been an incredible supporter — responsive and proactive with introductions, and amplifying our product through their network at every step.</p><div class="who"><b>Alex Paley</b><span>Co-Founder · <span class="co">Faraway Games</span></span></div></div>
+      <div class="ref reveal"><div class="q">“</div><p>NxGen supported us in designing our marketing campaign and connecting across ecosystems as we grew Kakarot.</p><div class="who"><b>Danilo Kim</b><span>Co-Founder · <span class="co">Kakarot</span></span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PORTFOLIO =============== -->
+<section id="portfolio">
+  <div class="shell">
+    <div class="sec-tag g reveal">Portfolio</div>
+    <h2 class="reveal">Doors we've<br>already opened.</h2>
+
+    <div class="port-cat reveal">
+      <h3><span class="sq"></span>DeFi</h3>
+      <div class="chips"><span class="chip">Orange Crypto</span><span class="chip">Marginal Network</span><span class="chip">Minterest</span><span class="chip">Primex Finance</span><span class="chip">Stables.money</span><span class="chip">Tap</span><span class="chip">Unstable Money</span></div>
+    </div>
+
+    <div class="port-cat reveal">
+      <h3><span class="sq"></span>Metaverse, Gaming &amp; NFT</h3>
+      <div class="chips"><span class="chip">Bubbles</span><span class="chip">Atmos Labs</span><span class="chip">Bitscrunch</span><span class="chip">Faraway Games</span><span class="chip">Gallery</span><span class="chip">MetaEngine</span><span class="chip">Gomu</span><span class="chip">Star Atlas</span><span class="chip">Striker Games</span><span class="chip">Quantum Temple</span><span class="chip">Trame Paris</span></div>
+    </div>
+
+    <div class="port-cat reveal">
+      <h3><span class="sq"></span>DAO</h3>
+      <div class="chips"><span class="chip">Beaker DAO</span><span class="chip">Glimmer DAO</span><span class="chip">Hydra</span><span class="chip">Punk DAO</span><span class="chip">Ready Player DAO</span><span class="chip">Tribute Labs</span><span class="chip">Money 2069</span></div>
+    </div>
+
+    <div class="port-cat reveal">
+      <h3><span class="sq"></span>AI, Infrastructure &amp; Tooling</h3>
+      <div class="chips"><span class="chip">Aleph Zero</span><span class="chip">Analog</span><span class="chip">Bitlayer</span><span class="chip">BluBird</span><span class="chip">ChainML</span><span class="chip">Creator.bid</span><span class="chip">deBridge</span><span class="chip">Drosera</span><span class="chip">Ether.fi</span><span class="chip">Fjord Foundry</span><span class="chip">Glitter Protocol</span><span class="chip">Glyph Exchange</span><span class="chip">Hybrid</span><span class="chip">Hydrogen Labs</span><span class="chip">Kintsu</span><span class="chip">Kakarot</span><span class="chip">Koii Network</span><span class="chip">Kwil</span><span class="chip">Manta Network</span><span class="chip">Neon Labs</span><span class="chip">Nosana</span><span class="chip">Privasea</span><span class="chip">Ringfence AI</span><span class="chip">Sarcophagus</span><span class="chip">Senken</span><span class="chip">Space and Time</span><span class="chip">Staking Rewards</span><span class="chip">Teleport</span><span class="chip">Truflation</span><span class="chip">Uplink</span><span class="chip">VenturePunk</span><span class="chip">Zeko</span></div>
+    </div>
+
+    <div class="port-cat vc reveal">
+      <h3><span class="sq"></span>VC Partners</h3>
+      <div class="chips"><span class="chip">Elixir Capital</span><span class="chip">ID Theory</span><span class="chip">Inflection</span><span class="chip">Planet A</span><span class="chip">Signum Capital</span><span class="chip">Smape Capital</span><span class="chip">Framework Ventures</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== QUOTE =============== -->
+<section class="quote-band">
+  <div class="shell">
+    <blockquote class="reveal">“The true value of networking doesn't come from how many people we can meet, but rather <em>how many people we can introduce to others.</em>”
+      <cite>— Simon Sinek</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- =============== CONTACT =============== -->
+<section id="contact" class="contact">
+  <div class="shell">
+    <h2 class="reveal">Ready to <span>knock?</span></h2>
+    <p class="reveal">Tell us where you want to go. Chances are, we already know who's on the other side of that door.</p>
+    <a class="btn-door reveal" href="mailto:hello@nxgen.xyz"><span>Open the conversation</span></a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <img class="flogo" src="../assets/logo-white.svg" alt="NxGen">
+      <p>Customized advisory and curated introductions throughout go-to-market phases. Our multi-family office invests in every founder we work with.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <ul>
+        <li><a href="#references">References</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li>
+        <li><a href="https://www.crunchbase.com" target="_blank" rel="noopener">Crunchbase</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span>© NxGen — Legal representative: the NxGen team</span>
+    <span>Imprint · Privacy · Terms of Use</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- build door tunnel ---------- */
+const tunnel = document.getElementById('tunnel');
+const FRAMES = 7;
+const frames = [];
+for (let i = 0; i < FRAMES; i++) {
+  const f = document.createElement('div');
+  f.className = 'door-frame';
+  const col = i % 2 === 0 ? 'var(--ink)' : (i % 3 === 0 ? 'var(--green)' : 'var(--orange)');
+  f.style.color = i === 0 ? 'var(--ink)' : col;
+  f.innerHTML = '<div class="edge t"></div><div class="edge b"></div><div class="edge l"></div><div class="edge r"></div>' +
+                '<div class="px a"></div><div class="px b"></div><div class="px c"></div><div class="px d"></div>';
+  tunnel.appendChild(f);
+  frames.push(f);
+}
+
+const wrap = document.querySelector('.portal-wrap');
+const heroCopy = document.getElementById('heroCopy');
+const beyond = document.getElementById('beyond');
+const flash = document.getElementById('flash');
+const hint = document.querySelector('.scroll-hint');
+
+function tick() {
+  const rect = wrap.getBoundingClientRect();
+  const total = wrap.offsetHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, -rect.top / total)); // 0..1 through the tunnel
+  // each frame starts far away and flies past the camera
+  frames.forEach((f, i) => {
+    const depth = i / (FRAMES - 1);            // 0 near .. 1 far
+    const zStart = -2400 * depth - 200;         // resting depth
+    const z = zStart + p * 3400;                // fly toward viewer
+    const op = z > 500 ? 0 : z > 200 ? 1 - (z - 200) / 300 : Math.min(1, (z + 2600) / 1200);
+    const rot = (p * 14) * (i % 2 === 0 ? 1 : -1);
+    f.style.transform = `translate(-50%,-50%) translateZ(${z}px) rotate(${rot}deg)`;
+    f.style.opacity = op;
+  });
+  // hero copy: recedes and fades as you push through
+  const hc = Math.min(1, p / 0.42);
+  heroCopy.style.opacity = 1 - hc;
+  heroCopy.style.transform = `scale(${1 + hc * 0.35}) translateY(${hc * -30}px)`;
+  heroCopy.style.filter = `blur(${hc * 10}px)`;
+  heroCopy.style.pointerEvents = hc > .5 ? 'none' : 'auto';
+  // flash at the threshold
+  const fl = p > 0.55 && p < 0.72 ? 1 - Math.abs((p - 0.635) / 0.085) : 0;
+  flash.style.opacity = fl * 0.9;
+  // world beyond
+  const bp = Math.min(1, Math.max(0, (p - 0.66) / 0.3));
+  beyond.style.opacity = bp;
+  beyond.style.transform = `scale(${0.86 + bp * 0.14})`;
+  hint.style.opacity = p > 0.05 ? 0 : 1;
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* ---------- scroll companion ---------- */
+const compTrail = document.getElementById('compTrail');
+const compTraveler = document.getElementById('compTraveler');
+const compPct = document.getElementById('compPct');
+const compSec = document.getElementById('compSec');
+const secMap = [
+  ['top','The door'],['about','What we do'],['team','References'],
+  ['references','References'],['portfolio','Portfolio'],['contact','Contact']
+].map(([id,name]) => [document.getElementById(id), name]).filter(([el]) => el);
+function compTick() {
+  const max = document.body.scrollHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, scrollY / max));
+  compTrail.style.height = (p*100) + '%';
+  compTraveler.style.top = (p*100) + '%';
+  // pixels of the traveler spin apart slightly while moving, like the logo X breathing
+  const spread = 1 + Math.sin(p * Math.PI) * 0.6;
+  compTraveler.style.transform = `translate(-50%,-50%) rotate(${p*360}deg) scale(${spread})`;
+  compPct.textContent = String(Math.round(p*100)).padStart(2,'0') + '%';
+  let name = 'The door';
+  for (const [el, n] of secMap) if (el.getBoundingClientRect().top < innerHeight*0.5) name = n;
+  if (compSec.textContent !== name) {
+    compSec.textContent = name;
+    compSec.classList.add('hot');
+    clearTimeout(compSec._t); compSec._t = setTimeout(() => compSec.classList.remove('hot'), 900);
+  }
+  requestAnimationFrame(compTick);
+}
+requestAnimationFrame(compTick);
+
+/* ---------- nav ---------- */
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), {passive:true});
+
+/* ---------- marquee: duplicate content ---------- */
+const mq = document.getElementById('mqTrack');
+mq.innerHTML += mq.innerHTML;
+
+/* ---------- reveals ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold:.12});
+document.querySelectorAll('.reveal').forEach((el,i) => { el.style.transitionDelay = (i%4)*60+'ms'; io.observe(el); });
+</script>
+</body>
+</html>

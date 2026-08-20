@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NxGen — From Reed to End Product</title>
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#131512;
+  --soil:#1a1a1a;
+  --moss:#1d241d;
+  --ink:#f2efe6;
+  --dim:#a3a196;
+  --green:#23d892;
+  --orange:#f76b21;
+  --line:rgba(242,239,230,.12);
+  --fd:'Fraunces',serif;
+  --fb:'Outfit',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--ink);font-family:var(--fb);font-weight:300;overflow-x:hidden}
+::selection{background:var(--orange);color:var(--night)}
+
+/* ---------- GROWING REED COMPANION (left) ---------- */
+.reed-comp{position:fixed;left:14px;bottom:0;height:78vh;width:70px;z-index:95;pointer-events:none;transform-origin:bottom center;animation:compSway 7s ease-in-out infinite alternate}
+@keyframes compSway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.reed-comp svg{width:100%;height:100%;overflow:visible}
+.reed-comp .stem{stroke:var(--green);stroke-width:3;fill:none;stroke-linecap:round}
+.reed-comp .leaf{fill:var(--green);opacity:.85;transform-origin:var(--ox) var(--oy);transform:scale(0);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.reed-comp .leaf.open{transform:scale(1)}
+.reed-comp .plume{fill:var(--orange);transform-origin:50% 100%;transform:scale(0);transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
+.reed-comp .plume.open{transform:scale(1)}
+.reed-pct{position:fixed;left:22px;bottom:2vh;z-index:95;font-family:var(--fd);font-style:italic;font-size:12px;color:var(--dim);pointer-events:none}
+@media(max-width:900px){.reed-comp,.reed-pct{display:none}}
+
+/* ---------- NAV ---------- */
+nav{position:fixed;inset:0 0 auto 0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 40px;transition:.4s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(19,21,18,.85);backdrop-filter:blur(12px);border-bottom-color:var(--line)}
+nav .logo img{height:24px;display:block}
+nav ul{display:flex;gap:30px;list-style:none;align-items:center}
+nav a{color:var(--ink);text-decoration:none;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+nav a:hover{color:var(--green)}
+nav .cta{border:1px solid var(--green);color:var(--green);padding:9px 20px;border-radius:100px;transition:.25s}
+nav .cta:hover{background:var(--green);color:var(--night)}
+@media(max-width:760px){nav{padding:14px 18px} nav ul{gap:14px} nav a{font-size:11px}}
+
+/* ---------- CHAPTER RAIL ---------- */
+.rail{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:16px}
+.rail a{display:block;width:9px;height:9px;border:1.5px solid var(--dim);transform:rotate(45deg);transition:.3s}
+.rail a.on{background:var(--green);border-color:var(--green)}
+.rail a:hover{border-color:var(--ink)}
+@media(max-width:900px){.rail{display:none}}
+
+/* ---------- HERO : reed field ---------- */
+.hero{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  background:radial-gradient(1000px 500px at 50% 115%, rgba(35,216,146,.14), transparent 60%), var(--night)}
+.reedfield{position:absolute;inset:auto 0 0 0;height:62vh;pointer-events:none}
+.reed{position:absolute;bottom:0;transform-origin:bottom center;animation:sway 5.4s ease-in-out infinite alternate}
+.reed .stalk{width:2.5px;background:linear-gradient(to top,rgba(35,216,146,.16),rgba(35,216,146,.7));margin:0 auto}
+.reed .plume{width:8px;height:34px;border-radius:8px 8px 3px 3px;background:linear-gradient(to top,rgba(35,216,146,.65),var(--orange));margin:0 auto -2px;opacity:.9}
+@keyframes sway{from{transform:rotate(-4.5deg)}to{transform:rotate(4.5deg)}}
+.hero-inner{position:relative;z-index:3;padding:0 24px;max-width:980px}
+.hero-inner .kick{font-size:12px;letter-spacing:.45em;text-transform:uppercase;color:var(--green);margin-bottom:28px}
+.hero-inner h1{font-family:var(--fd);font-weight:300;font-size:clamp(40px,7vw,104px);line-height:1.02;letter-spacing:-.01em}
+.hero-inner h1 em{font-style:italic;font-weight:400;color:var(--green)}
+.hero-inner h1 .o{color:var(--orange);font-style:italic}
+.hero-inner p{margin:32px auto 0;max-width:560px;color:var(--dim);font-size:17px;line-height:1.75}
+.hero-scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:4;font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:var(--dim)}
+.hero-scroll::after{content:'';display:block;width:1px;height:40px;margin:10px auto 0;background:linear-gradient(var(--green),transparent);animation:fall 1.8s infinite}
+@keyframes fall{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- CHAPTERS ---------- */
+.chapter{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:5vw;max-width:1280px;margin:0 auto;padding:110px 40px}
+.chapter.flip .viz{order:2}
+@media(max-width:900px){.chapter{grid-template-columns:1fr;padding:80px 22px;gap:44px}.chapter.flip .viz{order:0}}
+.ch-num{font-family:var(--fd);font-style:italic;font-weight:400;font-size:15px;color:var(--orange);letter-spacing:.2em;margin-bottom:14px}
+.chapter h2{font-family:var(--fd);font-weight:300;font-size:clamp(32px,4.4vw,62px);line-height:1.05;margin-bottom:24px}
+.chapter h2 em{font-style:italic;color:var(--green)}
+.chapter p{color:var(--dim);font-size:16px;line-height:1.8;max-width:480px}
+.chapter p b{color:var(--ink);font-weight:500}
+.chapter .tags{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
+.chapter .tags span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:100px;padding:7px 14px;color:var(--dim)}
+.viz{position:relative;aspect-ratio:1;max-width:520px;width:100%;margin:0 auto}
+.viz svg{width:100%;height:100%;display:block;overflow:visible}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ch1 growing reeds */
+.g-reed{transform-origin:bottom center;transform:scaleY(0);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.in-view .g-reed{transform:scaleY(1)}
+/* ch2 select: pulses */
+.sel-ring{transform-origin:center;opacity:0}
+.in-view .sel-ring{animation:ring 2.6s ease-out infinite}
+@keyframes ring{0%{opacity:0;transform:scale(.4)}30%{opacity:1}100%{opacity:0;transform:scale(1.25)}}
+/* ch3 weave: draw strands */
+.strand{stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 2.2s cubic-bezier(.4,0,.2,1)}
+.in-view .strand{stroke-dashoffset:0}
+.node{opacity:0;transition:opacity .5s;transition-delay:1.6s}
+.in-view .node{opacity:1}
+
+/* ---------- THE DOOR (sticky scroll scene) ---------- */
+.door-scene{height:260vh;position:relative}
+.door-stick{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(900px 480px at 50% 110%, rgba(247,107,33,.12), transparent 60%), var(--soil)}
+.door-copy{position:absolute;top:11vh;left:0;right:0;text-align:center;z-index:5;padding:0 22px}
+.door-copy .ch-num{margin-bottom:10px}
+.door-copy h2{font-family:var(--fd);font-weight:300;font-size:clamp(30px,4.4vw,58px)}
+.door-copy h2 em{font-style:italic;color:var(--orange)}
+.woven{position:relative;width:min(58vw,430px);height:min(74vh,590px);perspective:1200px;z-index:3}
+.leaf{position:absolute;top:0;bottom:0;width:50.5%;overflow:hidden;background:
+  repeating-linear-gradient(90deg, rgba(35,216,146,.28) 0 10px, rgba(35,216,146,.08) 10px 20px),
+  repeating-linear-gradient(0deg, rgba(247,107,33,.16) 0 14px, transparent 14px 30px),
+  #22271f;
+  border:2px solid rgba(242,239,230,.25);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.leaf.l{left:0;transform-origin:left center;border-right:none}
+.leaf.r{right:0;transform-origin:right center;border-left:none}
+.leaf .handle{position:absolute;top:50%;width:10px;height:56px;background:var(--orange);transform:translateY(-50%)}
+.leaf.l .handle{right:8px}
+.leaf.r .handle{left:8px}
+.light-beyond{position:absolute;inset:6% 12%;z-index:1;background:radial-gradient(closest-side, rgba(35,216,146,.6), rgba(35,216,146,.12) 55%, transparent 75%);filter:blur(24px);opacity:0}
+.door-through{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;opacity:0;padding:0 24px}
+.door-through .in2{max-width:720px}
+.door-through p.big{font-family:var(--fd);font-weight:300;font-size:clamp(22px,3.2vw,40px);line-height:1.3}
+.door-through p.big em{font-style:italic;color:var(--green)}
+.door-through p.sm{margin-top:20px;color:var(--dim);letter-spacing:.3em;text-transform:uppercase;font-size:11px}
+
+/* ---------- PRODUCT / PORTFOLIO ---------- */
+.shell{max-width:1280px;margin:0 auto;padding:110px 40px}
+@media(max-width:760px){.shell{padding:80px 22px}}
+.sect-head .ch-num{margin-bottom:10px}
+.sect-head h2{font-family:var(--fd);font-weight:300;font-size:clamp(32px,4.6vw,64px);line-height:1.05;margin-bottom:16px}
+.sect-head h2 em{font-style:italic;color:var(--green)}
+.sect-head p.sub{color:var(--dim);max-width:560px;line-height:1.75}
+.pf-groups{margin-top:60px;display:flex;flex-direction:column;gap:44px}
+.pf-g h3{font-family:var(--fd);font-style:italic;font-weight:400;font-size:20px;color:var(--ink);display:flex;gap:16px;align-items:center;margin-bottom:18px}
+.pf-g h3::after{content:'';flex:1;height:1px;background:var(--line)}
+.pf-g h3 i{width:9px;height:9px;background:var(--orange);transform:rotate(45deg)}
+.pf-g:nth-child(even) h3 i{background:var(--green)}
+.pf-g .names{display:flex;flex-wrap:wrap;gap:8px}
+.pf-g .names span{font-size:13.5px;padding:9px 16px;border:1px solid var(--line);border-radius:100px;color:var(--dim);transition:.25s;cursor:default}
+.pf-g .names span:hover{color:var(--green);border-color:var(--green);transform:translateY(-2px)}
+
+/* ---------- TEAM ---------- */
+.team-band{background:var(--moss);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.growers{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:56px}
+@media(max-width:1000px){.growers{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.growers{grid-template-columns:repeat(2,1fr)}}
+.grower{text-align:center}
+.grower .ring{position:relative;width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid var(--line);transition:border-color .35s,transform .35s}
+.grower:hover .ring{border-color:var(--green);transform:translateY(-6px)}
+.grower .ring img{width:100%;height:100%;object-fit:cover;filter:grayscale(.9);transition:filter .45s}
+.grower:hover .ring img{filter:none}
+.grower h3{font-family:var(--fd);font-weight:500;font-size:20px;margin-top:18px}
+.grower .r{font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);margin-top:6px}
+.grower.adv .r{color:var(--green)}
+.grower p{font-size:13px;color:var(--dim);margin-top:6px;line-height:1.5}
+
+/* ---------- REFERENCES ---------- */
+.testis{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:56px;max-width:960px}
+@media(max-width:900px){.testis{grid-template-columns:1fr}}
+.testi{border:1px solid var(--line);border-radius:18px;padding:34px 30px;background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:20px;transition:.3s}
+.testi:hover{border-color:var(--green);transform:translateY(-5px)}
+.testi .q{font-family:var(--fd);font-style:italic;font-size:40px;line-height:.5;color:var(--green)}
+.testi p{font-size:15px;line-height:1.8;color:var(--ink);flex:1}
+.testi .who b{display:block;font-weight:600;font-size:14px}
+.testi .who span{font-size:12px;color:var(--dim)}
+.testi .who span i{color:var(--orange);font-style:normal}
+
+/* ---------- QUOTE & CONTACT ---------- */
+.quote{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--moss)}
+.quote blockquote{font-family:var(--fd);font-weight:300;font-size:clamp(20px,3vw,38px);line-height:1.4;max-width:960px}
+.quote blockquote em{font-style:italic;color:var(--green)}
+.quote cite{display:block;margin-top:24px;font-style:normal;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.contact{text-align:center;position:relative;overflow:hidden}
+.contact .reedfield{height:34vh;opacity:.5}
+.contact h2{font-family:var(--fd);font-weight:300;font-size:clamp(32px,4.6vw,64px);margin-bottom:18px;position:relative;z-index:2}
+.contact h2 em{font-style:italic;color:var(--orange)}
+.contact p{color:var(--dim);max-width:500px;margin:0 auto 40px;line-height:1.75;position:relative;z-index:2}
+.grow-btn{display:inline-block;position:relative;z-index:2;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--night);background:var(--green);padding:20px 48px;border-radius:100px;text-decoration:none;font-weight:600;transition:.3s}
+.grow-btn:hover{background:var(--orange);color:#fff;transform:translateY(-3px)}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--line);padding:60px 40px 40px}
+.fg{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:44px}
+@media(max-width:760px){.fg{grid-template-columns:1fr}}
+footer img{height:22px;margin-bottom:20px}
+footer p{color:var(--dim);font-size:13px;line-height:1.7;max-width:340px}
+footer h4{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-bottom:16px}
+footer ul{list-style:none}
+footer li{margin-bottom:10px}
+footer a{color:var(--ink);text-decoration:none;font-size:14px}
+footer a:hover{color:var(--green)}
+.fb{max-width:1280px;margin:48px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div class="reed-comp" aria-hidden="true">
+  <svg viewBox="0 0 70 600">
+    <path class="stem" id="compStem" d="M35 600 C33 520 38 460 34 380 C30 300 39 220 35 150 C33 100 36 60 35 30"/>
+    <path class="leaf" style="--ox:35px;--oy:470px" d="M35 470 C20 455 12 435 16 412 C30 424 36 448 35 470Z"/>
+    <path class="leaf" style="--ox:35px;--oy:360px" d="M35 360 C50 345 58 322 53 300 C40 312 34 338 35 360Z"/>
+    <path class="leaf" style="--ox:35px;--oy:250px" d="M35 250 C20 236 13 214 18 194 C31 205 36 228 35 250Z"/>
+    <path class="leaf" style="--ox:35px;--oy:160px" d="M35 160 C49 147 55 126 51 108 C39 118 34 140 35 160Z"/>
+    <ellipse class="plume" id="compPlume" cx="35" cy="18" rx="7" ry="24"/>
+  </svg>
+</div>
+<div class="reed-pct" id="reedPct">0% grown</div>
+
+<nav id="nav">
+  <a class="logo" href="#top"><img src="../assets/logo-white.svg" alt="NxGen"></a>
+  <ul>
+    <li><a href="#references">References</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li>
+    <li><a class="cta" href="#contact">Start growing</a></li>
+  </ul>
+</nav>
+
+<div class="rail" id="rail">
+  <a href="#top" title="The field"></a>
+  <a href="#ch1" title="The reed"></a>
+  <a href="#ch2" title="The harvest"></a>
+  <a href="#ch3" title="The weave"></a>
+  <a href="#ch4" title="The door"></a>
+  <a href="#portfolio" title="The product"></a>
+</div>
+
+<!-- =============== HERO : THE FIELD =============== -->
+<header class="hero" id="top">
+  <div class="reedfield" id="field1"></div>
+  <div class="hero-inner">
+    <div class="kick">NxGen · Web3 Advisory &amp; Multi-Family Office</div>
+    <h1>From a single <em>reed</em><br>to the <span class="o">end product.</span></h1>
+    <p>Every great protocol starts as raw potential. We cultivate it, weave the right people around it, and open the door to market. This is the journey — scroll to walk it.</p>
+  </div>
+  <div class="hero-scroll">Begin the journey</div>
+</header>
+
+<!-- =============== CH 1 : THE REED =============== -->
+<section class="chapter" id="ch1">
+  <div class="viz reveal" data-viz>
+    <svg viewBox="0 0 400 400">
+      <line x1="0" y1="380" x2="400" y2="380" stroke="rgba(242,239,230,.2)" stroke-width="2"/>
+      <g class="g-reed" style="transition-delay:.1s"><line x1="120" y1="380" x2="120" y2="140" stroke="#23d892" stroke-width="3"/><ellipse cx="120" cy="128" rx="7" ry="22" fill="#f76b21"/></g>
+      <g class="g-reed" style="transition-delay:.35s"><line x1="200" y1="380" x2="200" y2="90" stroke="#23d892" stroke-width="4"/><ellipse cx="200" cy="76" rx="8" ry="26" fill="#f76b21"/></g>
+      <g class="g-reed" style="transition-delay:.6s"><line x1="280" y1="380" x2="280" y2="170" stroke="#23d892" stroke-width="3" opacity=".8"/><ellipse cx="280" cy="156" rx="7" ry="22" fill="#f76b21" opacity=".85"/></g>
+      <g class="g-reed" style="transition-delay:.8s"><line x1="160" y1="380" x2="160" y2="230" stroke="#23d892" stroke-width="2" opacity=".5"/></g>
+      <g class="g-reed" style="transition-delay:.9s"><line x1="245" y1="380" x2="245" y2="250" stroke="#23d892" stroke-width="2" opacity=".5"/></g>
+    </svg>
+  </div>
+  <div>
+    <div class="ch-num reveal">Chapter 01 — The Reed</div>
+    <h2 class="reveal">Every product starts as <em>raw potential.</em></h2>
+    <p class="reveal">A founder. An idea. A protocol that doesn't exist yet. Like reed on the waterline, it grows fast — but only in the right soil. <b>Through our multi-family office we invest in every founder we work with, beginning at the earliest stages.</b></p>
+    <div class="tags reveal"><span>Early stage</span><span>Founder-first</span><span>Multi-family office</span></div>
+  </div>
+</section>
+
+<!-- =============== CH 2 : THE HARVEST =============== -->
+<section class="chapter flip" id="ch2">
+  <div class="viz reveal" data-viz>
+    <svg viewBox="0 0 400 400">
+      <g opacity=".35">
+        <line x1="90" y1="380" x2="90" y2="180" stroke="#23d892" stroke-width="2"/>
+        <line x1="310" y1="380" x2="310" y2="200" stroke="#23d892" stroke-width="2"/>
+        <line x1="140" y1="380" x2="140" y2="240" stroke="#23d892" stroke-width="2"/>
+        <line x1="260" y1="380" x2="260" y2="230" stroke="#23d892" stroke-width="2"/>
+      </g>
+      <line x1="200" y1="380" x2="200" y2="100" stroke="#23d892" stroke-width="4"/>
+      <ellipse cx="200" cy="86" rx="9" ry="28" fill="#f76b21"/>
+      <circle class="sel-ring" cx="200" cy="230" r="90" fill="none" stroke="#f76b21" stroke-width="2"/>
+      <circle class="sel-ring" cx="200" cy="230" r="90" fill="none" stroke="#23d892" stroke-width="2" style="animation-delay:1.3s"/>
+    </svg>
+  </div>
+  <div>
+    <div class="ch-num reveal">Chapter 02 — The Harvest</div>
+    <h2 class="reveal">We select with <em>scientific rigor.</em></h2>
+    <p class="reveal">Not every stalk becomes a product. Our due diligence cuts deep — technology, tokenomics, team and timing — so that what we take to market <b>deserves the doors we open for it.</b></p>
+    <div class="tags reveal"><span>Due diligence</span><span>PhD-grade research</span><span>Curated, not crowded</span></div>
+  </div>
+</section>
+
+<!-- =============== CH 3 : THE WEAVE =============== -->
+<section class="chapter" id="ch3">
+  <div class="viz reveal" data-viz>
+    <svg viewBox="0 0 400 400">
+      <path class="strand" d="M40 320 C120 180 280 180 360 320" fill="none" stroke="#23d892" stroke-width="2.5"/>
+      <path class="strand" d="M40 80 C120 220 280 220 360 80" fill="none" stroke="#f76b21" stroke-width="2.5" style="transition-delay:.3s"/>
+      <path class="strand" d="M60 200 C160 120 240 280 340 200" fill="none" stroke="#23d892" stroke-width="2" style="transition-delay:.6s" opacity=".7"/>
+      <path class="strand" d="M60 200 C160 280 240 120 340 200" fill="none" stroke="#f76b21" stroke-width="2" style="transition-delay:.9s" opacity=".7"/>
+      <g class="node">
+        <circle cx="200" cy="200" r="7" fill="#f2efe6"/>
+        <circle cx="97" cy="200" r="5" fill="#23d892"/>
+        <circle cx="303" cy="200" r="5" fill="#f76b21"/>
+        <circle cx="200" cy="115" r="5" fill="#f76b21"/>
+        <circle cx="200" cy="285" r="5" fill="#23d892"/>
+      </g>
+    </svg>
+  </div>
+  <div>
+    <div class="ch-num reveal">Chapter 03 — The Weave</div>
+    <h2 class="reveal">One reed snaps. <em>A weave holds.</em></h2>
+    <p class="reveal">This is where NxGen lives: <b>curated introductions</b> to investors, market makers, DEXs, CEXs, key opinion leaders, auditors and launchpads. We've been weaving people together in Web3 for almost a decade — strand over strand, until your network can carry weight.</p>
+    <div class="tags reveal"><span>Investors</span><span>Market makers</span><span>CEXs &amp; DEXs</span><span>KOLs</span><span>Auditors</span><span>Launchpads</span></div>
+  </div>
+</section>
+
+<!-- =============== CH 4 : THE DOOR =============== -->
+<div class="door-scene" id="ch4">
+  <div class="door-stick">
+    <div class="door-copy">
+      <div class="ch-num">Chapter 04 — The Door</div>
+      <h2>The weave becomes <em>a door.</em></h2>
+    </div>
+    <div class="light-beyond" id="beyondGlow"></div>
+    <div class="woven" id="woven">
+      <div class="leaf l" id="leafL"><span class="handle"></span></div>
+      <div class="leaf r" id="leafR"><span class="handle"></span></div>
+    </div>
+    <div class="door-through" id="through">
+      <div class="in2">
+        <p class="big">Go-to-market is not a wall to break through.<br>It's a door — <em>when you know who holds the key.</em></p>
+        <p class="sm">Opening any door in Web3</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============== CH 5 : THE PRODUCT / PORTFOLIO =============== -->
+<section class="shell" id="portfolio">
+  <div class="sect-head">
+    <div class="ch-num reveal">Chapter 05 — The End Product</div>
+    <h2 class="reveal">What grew out of <em>the reed.</em></h2>
+    <p class="sub reveal">Protocols, games, DAOs and infrastructure that walked the journey with us — from raw idea to shipped product.</p>
+  </div>
+  <div class="pf-groups">
+    <div class="pf-g reveal"><h3><i></i>DeFi</h3><div class="names"><span>Orange Crypto</span><span>Marginal Network</span><span>Minterest</span><span>Primex Finance</span><span>Stables.money</span><span>Tap</span><span>Unstable Money</span></div></div>
+    <div class="pf-g reveal"><h3><i></i>Metaverse, Gaming &amp; NFT</h3><div class="names"><span>Bubbles</span><span>Atmos Labs</span><span>Bitscrunch</span><span>Faraway Games</span><span>Gallery</span><span>MetaEngine</span><span>Gomu</span><span>Star Atlas</span><span>Striker Games</span><span>Quantum Temple</span><span>Trame Paris</span></div></div>
+    <div class="pf-g reveal"><h3><i></i>DAO</h3><div class="names"><span>Beaker DAO</span><span>Glimmer DAO</span><span>Hydra</span><span>Punk DAO</span><span>Ready Player DAO</span><span>Tribute Labs</span><span>Money 2069</span></div></div>
+    <div class="pf-g reveal"><h3><i></i>AI, Infrastructure &amp; Tooling</h3><div class="names"><span>Aleph Zero</span><span>Analog</span><span>Bitlayer</span><span>BluBird</span><span>ChainML</span><span>Creator.bid</span><span>deBridge</span><span>Drosera</span><span>Ether.fi</span><span>Fjord Foundry</span><span>Glitter Protocol</span><span>Glyph Exchange</span><span>Hybrid</span><span>Hydrogen Labs</span><span>Kintsu</span><span>Kakarot</span><span>Koii Network</span><span>Kwil</span><span>Manta Network</span><span>Neon Labs</span><span>Nosana</span><span>Privasea</span><span>Ringfence AI</span><span>Sarcophagus</span><span>Senken</span><span>Space and Time</span><span>Staking Rewards</span><span>Teleport</span><span>Truflation</span><span>Uplink</span><span>VenturePunk</span><span>Zeko</span></div></div>
+    <div class="pf-g reveal"><h3><i></i>VC Partners</h3><div class="names"><span>Elixir Capital</span><span>ID Theory</span><span>Inflection</span><span>Planet A</span><span>Signum Capital</span><span>Smape Capital</span><span>Framework Ventures</span></div></div>
+  </div>
+</section>
+
+<!-- =============== REFERENCES =============== -->
+<section class="shell" id="references">
+  <div class="sect-head">
+    <div class="ch-num reveal">References</div>
+    <h2 class="reveal">Founders on <em>the journey.</em></h2>
+  </div>
+  <div class="testis">
+    <div class="testi reveal"><div class="q">“</div><p>The NxGen team has been an incredible supporter — responsive and proactive with introductions, amplifying our product through their network at every step.</p><div class="who"><b>Alex Paley</b><span>Co-Founder, <i>Faraway Games</i></span></div></div>
+    <div class="testi reveal"><div class="q">“</div><p>NxGen supported us in designing our marketing campaign and connecting across ecosystems as Kakarot grew.</p><div class="who"><b>Danilo Kim</b><span>Co-Founder, <i>Kakarot</i></span></div></div>
+  </div>
+</section>
+
+<!-- =============== QUOTE =============== -->
+<section class="quote">
+  <div class="shell">
+    <blockquote class="reveal">“The true value of networking doesn't come from how many people we can meet, but rather <em>how many people we can introduce to others.</em>”<cite>— Simon Sinek</cite></blockquote>
+  </div>
+</section>
+
+<!-- =============== CONTACT =============== -->
+<section class="contact" id="contact">
+  <div class="shell" style="position:relative;z-index:2">
+    <h2 class="reveal">Ready to plant <em>your reed?</em></h2>
+    <p class="reveal">Tell us what you're building. We'll help it grow — and open the doors it deserves.</p>
+    <a class="grow-btn reveal" href="mailto:hello@nxgen.xyz">Start the journey</a>
+  </div>
+  <div class="reedfield" id="field2"></div>
+</section>
+
+<footer>
+  <div class="fg">
+    <div>
+      <img src="../assets/logo-white.svg" alt="NxGen">
+      <p>Customized advisory and curated introductions throughout go-to-market phases. Our multi-family office invests in every founder we work with.</p>
+    </div>
+    <div><h4>Site</h4><ul><li><a href="#references">References</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li></ul></div>
+    <div><h4>Connect</h4><ul><li><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></li><li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li><li><a href="https://www.crunchbase.com" target="_blank" rel="noopener">Crunchbase</a></li></ul></div>
+  </div>
+  <div class="fb"><span>© NxGen — Legal representative: the NxGen team</span><span>Imprint · Privacy · Terms of Use</span></div>
+</footer>
+
+<script>
+/* ---------- reed fields ---------- */
+function plantField(id, count) {
+  const f = document.getElementById(id);
+  if (!f) return;
+  for (let i = 0; i < count; i++) {
+    const r = document.createElement('div');
+    r.className = 'reed';
+    const h = 60 + Math.random() * 240;
+    r.style.left = (Math.random() * 100) + '%';
+    r.style.animationDelay = (-Math.random() * 6) + 's';
+    r.style.animationDuration = (4 + Math.random() * 3.5) + 's';
+    r.style.opacity = .35 + Math.random() * .6;
+    const hasPlume = Math.random() > .45;
+    r.innerHTML = (hasPlume ? '<div class="plume" style="height:' + (18 + Math.random()*22) + 'px"></div>' : '') +
+                  '<div class="stalk" style="height:' + h + 'px"></div>';
+    f.appendChild(r);
+  }
+}
+plantField('field1', innerWidth < 700 ? 40 : 90);
+plantField('field2', innerWidth < 700 ? 26 : 60);
+
+/* ---------- growing reed companion ---------- */
+const stem = document.getElementById('compStem');
+const stemLen = stem.getTotalLength();
+stem.style.strokeDasharray = stemLen;
+stem.style.strokeDashoffset = stemLen;
+const leaves = [...document.querySelectorAll('.reed-comp .leaf')];
+const leafAt = [0.22, 0.42, 0.62, 0.8];   // scroll progress at which each leaf unfolds
+const plume = document.getElementById('compPlume');
+const reedPct = document.getElementById('reedPct');
+function reedTick() {
+  const max = document.body.scrollHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, scrollY / max));
+  stem.style.strokeDashoffset = stemLen * (1 - p);
+  leaves.forEach((l, i) => l.classList.toggle('open', p > leafAt[i]));
+  plume.classList.toggle('open', p > 0.96);
+  reedPct.textContent = Math.round(p*100) + '% grown';
+  requestAnimationFrame(reedTick);
+}
+requestAnimationFrame(reedTick);
+
+/* ---------- nav ---------- */
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), {passive:true});
+
+/* ---------- reveals + viz triggers ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) {
+    e.target.classList.add('in');
+    if (e.target.hasAttribute('data-viz')) e.target.classList.add('in-view');
+    io.unobserve(e.target);
+  }
+}), {threshold:.2});
+document.querySelectorAll('.reveal').forEach((el,i) => { el.style.transitionDelay = (i%3)*80+'ms'; io.observe(el); });
+
+/* ---------- door scene ---------- */
+const scene = document.getElementById('ch4');
+const leafL = document.getElementById('leafL');
+const leafR = document.getElementById('leafR');
+const through = document.getElementById('through');
+const glow = document.getElementById('beyondGlow');
+const woven = document.getElementById('woven');
+function doorTick() {
+  const total = scene.offsetHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, -scene.getBoundingClientRect().top / total));
+  const open = Math.min(1, Math.max(0, (p - 0.12) / 0.55));  // door swings open
+  const ease = open < .5 ? 2*open*open : 1 - Math.pow(-2*open+2,2)/2;
+  leafL.style.transform = `rotateY(${ease * -108}deg)`;
+  leafR.style.transform = `rotateY(${ease * 108}deg)`;
+  glow.style.opacity = ease;
+  const thr = Math.min(1, Math.max(0, (p - 0.6) / 0.3));      // message after passing through
+  through.style.opacity = thr;
+  through.style.transform = `scale(${0.92 + thr*0.08})`;
+  woven.style.opacity = 1 - Math.max(0, (p - 0.8) / 0.2);
+  requestAnimationFrame(doorTick);
+}
+requestAnimationFrame(doorTick);
+
+/* ---------- chapter rail ---------- */
+const railLinks = document.querySelectorAll('#rail a');
+const targets = ['top','ch1','ch2','ch3','ch4','portfolio'].map(id => document.getElementById(id));
+addEventListener('scroll', () => {
+  let active = 0;
+  targets.forEach((t, i) => { if (t && t.getBoundingClientRect().top < innerHeight * 0.5) active = i; });
+  railLinks.forEach((l, i) => l.classList.toggle('on', i === active));
+}, {passive:true});
+</script>
+</body>
+</html>

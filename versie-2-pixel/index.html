@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NxGen — Opening any door in Web3</title>
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f2ec;
+  --paper2:#ece8df;
+  --ink:#1a1a1a;
+  --dim:#6d6a63;
+  --orange:#f76b21;
+  --green:#23d892;
+  --line:rgba(26,26,26,.14);
+  --fd:'Bricolage Grotesque',sans-serif;
+  --fb:'Instrument Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--fb);overflow-x:hidden}
+::selection{background:var(--green);color:var(--ink)}
+
+/* ---------- ROLLING PIXEL (left edge) ---------- */
+.roller-rail{position:fixed;left:30px;top:8vh;bottom:8vh;width:2px;z-index:150;pointer-events:none;
+  background-image:linear-gradient(var(--line) 50%, transparent 50%);background-size:2px 12px}
+.roller{position:absolute;left:50%;top:0;width:20px;height:20px;transform:translate(-50%,-50%);transition:background-color .4s}
+.roller .face{position:absolute;inset:0;background:inherit}
+.roller .eye{position:absolute;width:4px;height:4px;background:var(--paper);top:5px;transition:.3s}
+.roller .eye.l{left:4px}
+.roller .eye.r{right:4px}
+.roller-count{position:fixed;left:18px;bottom:2.5vh;z-index:150;font-family:var(--fd);font-weight:700;font-size:12px;letter-spacing:.14em;color:var(--dim);pointer-events:none}
+@media(max-width:900px){.roller-rail,.roller-count{display:none}}
+
+/* ---------- NAV ---------- */
+nav{position:fixed;inset:0 0 auto 0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:18px 36px;transition:.4s}
+nav.scrolled{background:rgba(245,242,236,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.wordmark{display:block;line-height:0}
+.wordmark img{height:24px;display:block}
+.wordmark .lg-w{display:none}
+nav.dark-mode .wordmark .lg-w{display:block}
+nav.dark-mode .wordmark .lg-c{display:none}
+nav ul{display:flex;gap:6px;list-style:none}
+nav ul a{display:block;padding:10px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;color:inherit;text-decoration:none;border-radius:100px;transition:.25s}
+nav.dark-mode ul a{color:#f5f2ec}
+nav ul a:hover{background:var(--ink);color:var(--paper)}
+nav.dark-mode ul a:hover{background:var(--paper);color:var(--ink)}
+nav ul a.pill{background:var(--orange);color:#fff}
+nav ul a.pill:hover{background:var(--green);color:var(--ink)}
+@media(max-width:760px){nav{padding:14px 18px} nav ul a{padding:8px 10px;font-size:12px}}
+
+/* ---------- PIXEL DOOR HERO ---------- */
+.doorway{height:300vh;position:relative}
+.doorway .stage{position:sticky;top:0;height:100vh;overflow:hidden}
+.behind{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 6vw;background:
+  radial-gradient(700px 400px at 85% 20%, rgba(35,216,146,.16), transparent 60%),
+  radial-gradient(700px 500px at 10% 85%, rgba(247,107,33,.14), transparent 60%),
+  var(--paper)}
+.behind h1{font-family:var(--fd);font-weight:800;font-size:clamp(44px,9.5vw,150px);line-height:.95;letter-spacing:-.03em;text-transform:uppercase}
+.behind h1 .row{display:block}
+.behind h1 .outline{color:transparent;-webkit-text-stroke:2px var(--ink)}
+.behind h1 .accent{color:var(--orange)}
+.behind .lede{margin-top:34px;max-width:520px;font-size:17px;line-height:1.7;color:var(--dim)}
+.behind .lede b{color:var(--ink)}
+.badges{margin-top:36px;display:flex;gap:10px;flex-wrap:wrap}
+.badge{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--ink);padding:9px 16px;border-radius:100px}
+.badge.f{background:var(--green);border-color:var(--green)}
+/* the pixel door overlay */
+.pixel-door{position:absolute;inset:0;display:grid;z-index:10;pointer-events:none}
+.cell{background:var(--ink);will-change:transform,opacity}
+.cell.o{background:var(--orange)}
+.cell.g{background:var(--green)}
+.door-label{position:absolute;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;pointer-events:none}
+.door-label img{height:44px}
+.door-label p{color:#f5f2ec;font-size:12px;font-weight:600;letter-spacing:.5em;text-transform:uppercase;opacity:.7}
+.knob{width:64px;height:64px;border-radius:50%;border:2px solid rgba(245,242,236,.5);display:grid;place-items:center;animation:pulse 2s infinite}
+.knob::after{content:'';width:12px;height:12px;background:var(--orange)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ---------- GENERIC ---------- */
+section{position:relative}
+.shell{max-width:1280px;margin:0 auto;padding:110px 6vw}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);margin-bottom:20px}
+.eyebrow i{width:11px;height:11px;background:var(--orange);display:inline-block}
+.eyebrow.g i{background:var(--green)}
+h2{font-family:var(--fd);font-weight:800;font-size:clamp(34px,5vw,72px);line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h2 .stroke{color:transparent;-webkit-text-stroke:1.8px var(--ink)}
+.reveal{opacity:0;transform:translateY(44px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- ABOUT ---------- */
+.about{background:var(--paper)}
+.about-cols{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:50px;align-items:start}
+@media(max-width:900px){.about-cols{grid-template-columns:1fr}}
+.about-cols .big{font-family:var(--fd);font-weight:500;font-size:clamp(20px,2.3vw,30px);line-height:1.35}
+.about-cols .big mark{background:linear-gradient(transparent 62%,var(--green) 62%);color:inherit;padding:0 2px}
+.about-cols .big mark.o{background:linear-gradient(transparent 62%,var(--orange) 62%)}
+.stack{display:flex;flex-direction:column;gap:0;border-top:2px solid var(--ink)}
+.stack .item{display:grid;grid-template-columns:70px 1fr;gap:18px;padding:26px 0;border-bottom:2px solid var(--ink);transition:padding-left .3s}
+.stack .item:hover{padding-left:14px}
+.stack .num{font-family:var(--fd);font-weight:800;font-size:26px;color:var(--orange)}
+.stack .item:nth-child(2) .num{color:var(--green)}
+.stack h3{font-family:var(--fd);font-weight:700;font-size:19px;margin-bottom:8px;text-transform:uppercase;letter-spacing:-.01em}
+.stack p{color:var(--dim);font-size:15px;line-height:1.65}
+
+/* ---------- TICKER ---------- */
+.ticker{background:var(--ink);color:var(--paper);overflow:hidden;padding:20px 0;transform:rotate(-1.2deg) scale(1.02);margin:30px 0}
+.ticker .tr{display:flex;gap:48px;width:max-content;animation:tk 32s linear infinite}
+.ticker span{font-family:var(--fd);font-weight:700;font-size:20px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.ticker b{color:var(--green);margin-right:48px;font-weight:700}
+.ticker span:nth-child(odd) b{color:var(--orange)}
+@keyframes tk{to{transform:translateX(-50%)}}
+
+/* ---------- TEAM ---------- */
+.team{background:var(--paper2)}
+.team-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:60px}
+@media(max-width:1000px){.team-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.team-row{grid-template-columns:repeat(2,1fr)}}
+.tcard{position:relative}
+.tcard .frame{position:relative;aspect-ratio:4/5;overflow:hidden;border-radius:14px;background:var(--ink)}
+.tcard .frame img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .45s,transform .6s cubic-bezier(.2,.7,.2,1)}
+.tcard:hover .frame img{filter:none;transform:scale(1.06) rotate(-1deg)}
+.tcard .tag{position:absolute;top:12px;left:12px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:var(--orange);color:#fff;padding:6px 10px;border-radius:100px}
+.tcard.adv .tag{background:var(--green);color:var(--ink)}
+.tcard h3{font-family:var(--fd);font-weight:700;font-size:20px;margin:14px 0 3px;text-transform:uppercase}
+.tcard p{font-size:13px;color:var(--dim)}
+
+/* ---------- REFERENCES : stacked sticky cards ---------- */
+.refs-wrap{max-width:900px;margin:60px auto 0}
+.rcard{position:sticky;top:110px;border-radius:20px;padding:44px 46px;margin-bottom:26px;border:2px solid var(--ink);box-shadow:0 14px 0 -6px var(--ink)}
+.rcard.c1{background:#fff}
+.rcard.c2{background:var(--green)}
+.rcard.c3{background:var(--orange);color:#fff}
+.rcard .mark{font-family:var(--fd);font-weight:800;font-size:56px;line-height:.6;margin-bottom:22px}
+.rcard p{font-family:var(--fd);font-weight:500;font-size:clamp(17px,2vw,23px);line-height:1.45}
+.rcard .who{margin-top:28px;font-family:var(--fb);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+.rcard .who span{opacity:.65;font-weight:400;display:block;margin-top:3px;text-transform:none;letter-spacing:0}
+@media(max-width:700px){.rcard{padding:30px 26px}}
+
+/* ---------- PORTFOLIO ---------- */
+.pf-cat{border-top:2px solid var(--ink);padding:34px 0}
+.pf-cat:last-child{border-bottom:2px solid var(--ink)}
+.pf-head{display:flex;justify-content:space-between;align-items:baseline;cursor:default;gap:20px;flex-wrap:wrap}
+.pf-head h3{font-family:var(--fd);font-weight:800;font-size:clamp(22px,3vw,38px);text-transform:uppercase;letter-spacing:-.02em}
+.pf-head .count{font-family:var(--fd);font-weight:700;font-size:15px;color:#fff;background:var(--ink);border-radius:100px;padding:6px 14px}
+.pf-cat:nth-child(odd) .pf-head .count{background:var(--orange)}
+.pf-cat:nth-child(even) .pf-head .count{background:var(--green);color:var(--ink)}
+.pf-list{display:flex;flex-wrap:wrap;gap:8px 6px;margin-top:22px}
+.pf-list span{font-size:14px;font-weight:500;padding:8px 14px;border:1.5px solid var(--line);border-radius:100px;transition:.22s;cursor:default}
+.pf-list span:hover{border-color:var(--ink);background:var(--ink);color:var(--paper);transform:translateY(-2px)}
+
+/* ---------- QUOTE ---------- */
+.quote{background:var(--ink);color:var(--paper)}
+.quote blockquote{font-family:var(--fd);font-weight:500;font-size:clamp(22px,3.4vw,44px);line-height:1.25;letter-spacing:-.015em;max-width:1000px}
+.quote blockquote em{font-style:normal;color:var(--green)}
+.quote cite{display:block;margin-top:30px;font-family:var(--fb);font-style:normal;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,242,236,.55)}
+
+/* ---------- CONTACT ---------- */
+.contact{text-align:center;background:
+  radial-gradient(600px 300px at 50% 100%, rgba(247,107,33,.15), transparent 70%), var(--paper)}
+.contact h2{margin-bottom:22px}
+.contact p{color:var(--dim);max-width:480px;margin:0 auto 42px;font-size:16px;line-height:1.7}
+.big-btn{display:inline-block;font-family:var(--fd);font-weight:800;font-size:clamp(18px,2.4vw,28px);text-transform:uppercase;letter-spacing:-.01em;color:var(--ink);background:var(--green);border:2px solid var(--ink);border-radius:100px;padding:22px 54px;text-decoration:none;box-shadow:0 8px 0 var(--ink);transition:.18s}
+.big-btn:hover{transform:translateY(4px);box-shadow:0 4px 0 var(--ink);background:var(--orange);color:#fff}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--ink);color:var(--paper);padding:70px 6vw 36px}
+.fgrid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:44px}
+@media(max-width:760px){.fgrid{grid-template-columns:1fr}}
+footer img{height:26px;margin-bottom:22px}
+footer p{color:rgba(245,242,236,.55);font-size:14px;line-height:1.7;max-width:340px}
+footer h4{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:rgba(245,242,236,.45);margin-bottom:16px}
+footer ul{list-style:none}
+footer ul li{margin-bottom:10px}
+footer a{color:var(--paper);text-decoration:none;font-size:15px}
+footer a:hover{color:var(--green)}
+.fbase{max-width:1280px;margin:52px auto 0;padding-top:24px;border-top:1px solid rgba(245,242,236,.15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:rgba(245,242,236,.45)}
+</style>
+</head>
+<body>
+
+<div class="roller-rail" aria-hidden="true">
+  <div class="roller" id="roller" style="background:#f76b21">
+    <span class="eye l"></span><span class="eye r"></span>
+  </div>
+</div>
+<div class="roller-count" id="rollerCount" aria-hidden="true">01 / 06</div>
+
+<nav id="nav" class="dark-mode">
+  <a class="wordmark" href="#top"><img class="lg-w" src="../assets/logo-white.svg" alt="NxGen"><img class="lg-c" src="../assets/logo-color.svg" alt="NxGen"></a>
+  <ul>
+    <li><a href="#references">References</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li>
+    <li><a class="pill" href="#contact">Say hi</a></li>
+  </ul>
+</nav>
+
+<!-- =============== PIXEL DOOR HERO =============== -->
+<div class="doorway" id="top">
+  <div class="stage">
+    <div class="behind">
+      <h1>
+        <span class="row">Opening</span>
+        <span class="row outline">any door</span>
+        <span class="row accent">in Web3.</span>
+      </h1>
+      <p class="lede"><b>Customized advisory &amp; curated introductions</b> throughout your go-to-market phases — and a multi-family office that invests in every founder we work with.</p>
+      <div class="badges">
+        <span class="badge f">Est. a decade in Web3</span>
+        <span class="badge">Advisory</span>
+        <span class="badge">Introductions</span>
+        <span class="badge">Early-stage investing</span>
+      </div>
+    </div>
+    <div class="pixel-door" id="pixelDoor"></div>
+    <div class="door-label" id="doorLabel">
+      <img src="../assets/logo-white.svg" alt="NxGen">
+      <div class="knob"></div>
+      <p>Scroll to open</p>
+    </div>
+  </div>
+</div>
+
+<!-- =============== ABOUT =============== -->
+<section class="about" id="about">
+  <div class="shell">
+    <div class="eyebrow reveal"><i></i>What we do</div>
+    <h2 class="reveal">We don't knock.<br><span class="stroke">We're already inside.</span></h2>
+    <div class="about-cols">
+      <p class="big reveal">NxGen provides <mark>customized advisory</mark> and <mark class="o">curated introductions</mark> throughout your go-to-market phases — connecting founders with investors, market makers, DEXs, CEXs, key opinion leaders, auditors and launchpads.</p>
+      <div class="stack reveal">
+        <div class="item"><span class="num">01</span><div><h3>Curated introductions</h3><p>The right investor, exchange, auditor or KOL — introduced personally, at exactly the right moment in your journey.</p></div></div>
+        <div class="item"><span class="num">02</span><div><h3>Go-to-market advisory</h3><p>Hands-on, customized guidance through every launch phase, shaped around your protocol and your market.</p></div></div>
+        <div class="item"><span class="num">03</span><div><h3>We invest in you</h3><p>Through our multi-family office we invest in every founder we work with — starting at the earliest stages.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="tr" id="tk">
+  <span><b>✳</b>Investors</span><span><b>✳</b>Market Makers</span><span><b>✳</b>DEXs</span><span><b>✳</b>CEXs</span><span><b>✳</b>KOLs</span><span><b>✳</b>Auditors</span><span><b>✳</b>Launchpads</span>
+</div></div>
+
+<!-- =============== REFERENCES =============== -->
+<section id="references">
+  <div class="shell">
+    <div class="eyebrow reveal"><i></i>References</div>
+    <h2 class="reveal">Word gets<br><span class="stroke">around.</span></h2>
+    <div class="refs-wrap">
+      <div class="rcard c1"><div class="mark">“</div><p>The NxGen team has been an incredible supporter — responsive, proactive with introductions, and always amplifying our product through their network.</p><div class="who">Alex Paley <span>Co-Founder, Faraway Games</span></div></div>
+      <div class="rcard c3"><div class="mark">“</div><p>NxGen helped us design our marketing campaign and connected us across ecosystems as Kakarot grew.</p><div class="who">Danilo Kim <span>Co-Founder, Kakarot</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PORTFOLIO =============== -->
+<section id="portfolio">
+  <div class="shell">
+    <div class="eyebrow g reveal"><i></i>Portfolio</div>
+    <h2 class="reveal" style="margin-bottom:60px">Every chip is<br><span class="stroke">an open door.</span></h2>
+
+    <div class="pf-cat reveal">
+      <div class="pf-head"><h3>DeFi</h3><span class="count">7</span></div>
+      <div class="pf-list"><span>Orange Crypto</span><span>Marginal Network</span><span>Minterest</span><span>Primex Finance</span><span>Stables.money</span><span>Tap</span><span>Unstable Money</span></div>
+    </div>
+    <div class="pf-cat reveal">
+      <div class="pf-head"><h3>Metaverse, Gaming &amp; NFT</h3><span class="count">11</span></div>
+      <div class="pf-list"><span>Bubbles</span><span>Atmos Labs</span><span>Bitscrunch</span><span>Faraway Games</span><span>Gallery</span><span>MetaEngine</span><span>Gomu</span><span>Star Atlas</span><span>Striker Games</span><span>Quantum Temple</span><span>Trame Paris</span></div>
+    </div>
+    <div class="pf-cat reveal">
+      <div class="pf-head"><h3>DAO</h3><span class="count">7</span></div>
+      <div class="pf-list"><span>Beaker DAO</span><span>Glimmer DAO</span><span>Hydra</span><span>Punk DAO</span><span>Ready Player DAO</span><span>Tribute Labs</span><span>Money 2069</span></div>
+    </div>
+    <div class="pf-cat reveal">
+      <div class="pf-head"><h3>AI, Infrastructure &amp; Tooling</h3><span class="count">33</span></div>
+      <div class="pf-list"><span>Aleph Zero</span><span>Analog</span><span>Bitlayer</span><span>BluBird</span><span>ChainML</span><span>Creator.bid</span><span>deBridge</span><span>Drosera</span><span>Ether.fi</span><span>Fjord Foundry</span><span>Glitter Protocol</span><span>Glyph Exchange</span><span>Hybrid</span><span>Hydrogen Labs</span><span>Kintsu</span><span>Kakarot</span><span>Koii Network</span><span>Kwil</span><span>Manta Network</span><span>Neon Labs</span><span>Nosana</span><span>Privasea</span><span>Ringfence AI</span><span>Sarcophagus</span><span>Senken</span><span>Space and Time</span><span>Staking Rewards</span><span>Teleport</span><span>Truflation</span><span>Uplink</span><span>VenturePunk</span><span>Zeko</span></div>
+    </div>
+    <div class="pf-cat reveal">
+      <div class="pf-head"><h3>VC Partners</h3><span class="count">7</span></div>
+      <div class="pf-list"><span>Elixir Capital</span><span>ID Theory</span><span>Inflection</span><span>Planet A</span><span>Signum Capital</span><span>Smape Capital</span><span>Framework Ventures</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== QUOTE =============== -->
+<section class="quote">
+  <div class="shell">
+    <blockquote class="reveal">“The true value of networking doesn't come from how many people we can meet, but rather <em>how many people we can introduce to others.</em>”</blockquote>
+    <cite class="reveal">— Simon Sinek</cite>
+  </div>
+</section>
+
+<!-- =============== CONTACT =============== -->
+<section class="contact" id="contact">
+  <div class="shell">
+    <div class="eyebrow reveal" style="justify-content:center;display:flex"><i></i>Contact</div>
+    <h2 class="reveal">Which door<br>can we open for you?</h2>
+    <p class="reveal">Tell us where you want to go — chances are we already know who's on the other side.</p>
+    <a class="big-btn reveal" href="mailto:hello@nxgen.xyz">Let's talk →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="fgrid">
+    <div>
+      <img src="../assets/logo-white.svg" alt="NxGen">
+      <p>Customized advisory and curated introductions throughout go-to-market phases. Our multi-family office invests in every founder we work with.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <ul><li><a href="#references">References</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="https://mirror.xyz/nxgen.eth" target="_blank" rel="noopener">Research</a></li></ul>
+    </div>
+    <div>
+      <h4>Connect</h4>
+      <ul><li><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></li><li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li><li><a href="https://www.crunchbase.com" target="_blank" rel="noopener">Crunchbase</a></li></ul>
+    </div>
+  </div>
+  <div class="fbase">
+    <span>© NxGen — Legal representative: the NxGen team</span>
+    <span>Imprint · Privacy · Terms of Use</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- build pixel door ---------- */
+const door = document.getElementById('pixelDoor');
+const COLS = innerWidth < 700 ? 8 : 14, ROWS = innerWidth < 700 ? 12 : 9;
+door.style.gridTemplateColumns = `repeat(${COLS},1fr)`;
+door.style.gridTemplateRows = `repeat(${ROWS},1fr)`;
+const cells = [];
+for (let r = 0; r < ROWS; r++) {
+  for (let c = 0; c < COLS; c++) {
+    const d = document.createElement('div');
+    d.className = 'cell';
+    const rnd = Math.random();
+    if (rnd > 0.955) d.classList.add('o');
+    else if (rnd > 0.91) d.classList.add('g');
+    door.appendChild(d);
+    // stagger: distance from center + noise -> order of disappearance
+    const dx = (c - (COLS-1)/2) / COLS, dy = (r - (ROWS-1)/2) / ROWS;
+    const dist = Math.sqrt(dx*dx + dy*dy) * 1.6;
+    cells.push({el:d, t: Math.min(1, dist*0.55 + Math.random()*0.45)});
+  }
+}
+
+const doorway = document.querySelector('.doorway');
+const label = document.getElementById('doorLabel');
+const nav = document.getElementById('nav');
+
+function frame() {
+  const total = doorway.offsetHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, -doorway.getBoundingClientRect().top / total));
+  const open = Math.min(1, p / 0.75); // door fully open at 75% of the scroll run
+  cells.forEach(({el, t}) => {
+    // each cell has its own threshold t in [0,1]
+    const local = Math.min(1, Math.max(0, (open - t*0.8) / 0.2));
+    if (local <= 0) { el.style.transform=''; el.style.opacity=1; return; }
+    el.style.transform = `scale(${1-local}) rotate(${local*90}deg)`;
+    el.style.opacity = 1 - local;
+  });
+  label.style.opacity = Math.max(0, 1 - open*2.2);
+  label.style.transform = `translateY(${open*-60}px)`;
+  nav.classList.toggle('dark-mode', open < 0.45);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- rolling pixel companion ---------- */
+const roller = document.getElementById('roller');
+const rollerCount = document.getElementById('rollerCount');
+const rollerRail = document.querySelector('.roller-rail');
+const rSections = ['top','about','team','references','portfolio','contact']
+  .map(id => document.getElementById(id)).filter(Boolean);
+const rColors = ['#f76b21','#1a1a1a','#23d892','#f76b21','#1a1a1a','#23d892'];
+let lastIdx = -1;
+function rollerTick() {
+  const max = document.body.scrollHeight - innerHeight;
+  const p = Math.min(1, Math.max(0, scrollY / max));
+  const railH = rollerRail.offsetHeight;
+  // roll: translate along rail, rotation matched to "distance travelled" like a wheel
+  roller.style.top = (p * railH) + 'px';
+  roller.style.transform = `translate(-50%,-50%) rotate(${p * 1080}deg)`;
+  let idx = 0;
+  rSections.forEach((el, i) => { if (el.getBoundingClientRect().top < innerHeight*0.5) idx = i; });
+  if (idx !== lastIdx) {
+    lastIdx = idx;
+    roller.style.backgroundColor = rColors[idx % rColors.length];
+    rollerCount.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(rSections.length).padStart(2,'0');
+    // squash & stretch bounce on section change
+    roller.animate([
+      {scale:'1 1'},{scale:'1.45 .6'},{scale:'.75 1.3'},{scale:'1 1'}
+    ], {duration:450, easing:'cubic-bezier(.34,1.56,.64,1)', composite:'add'});
+  }
+  requestAnimationFrame(rollerTick);
+}
+requestAnimationFrame(rollerTick);
+
+/* nav bg */
+addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > innerHeight*2.2);
+}, {passive:true});
+
+/* ticker duplicate */
+const tk = document.getElementById('tk');
+tk.innerHTML += tk.innerHTML;
+
+/* reveals */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold:.12});
+document.querySelectorAll('.reveal').forEach((el,i) => { el.style.transitionDelay = (i%4)*70+'ms'; io.observe(el); });
+</script>
+</body>
+</html>
