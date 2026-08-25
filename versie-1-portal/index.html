@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NxGen | Opening any door in Web3</title>
+<title>NxGen.xyz | Opening any door in Web3</title>
 <link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#141414;
@@ -18,8 +18,8 @@
   --orange:#f76b21;
   --green:#23d892;
   --line:rgba(244,242,238,.1);
-  --font-d:'Unbounded',sans-serif;
-  --font-b:'Archivo',sans-serif;
+  --font-d:'Inter',sans-serif;
+  --font-b:'Inter',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -27,7 +27,7 @@ html{scroll-behavior:smooth}
    Line-height: display 1.05-1.1 · sub-display 1.4 · body 1.6 · lead 1.7
    Letter-spacing: display .01em · nav/meta caps .14em · caps-heading .24em · caps-label .32em */
 body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-weight:300;font-size:15px;line-height:1.6;overflow-x:hidden}
-::selection{background:var(--orange);color:#141414}
+::selection{background:var(--orange);color:#333333}
 
 /* ---------- SCROLL COMPANION (left rail) ---------- */
 .companion{position:fixed;left:34px;top:50%;transform:translateY(-50%);height:58vh;z-index:95;display:flex;gap:14px;align-items:stretch;pointer-events:none}
@@ -55,7 +55,7 @@ nav a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:2px;bac
 nav a:hover::after{width:100%}
 nav .cta{border:1px solid var(--orange);color:var(--orange);padding:9px 18px}
 nav .cta::after{display:none}
-nav .cta:hover{background:var(--orange);color:#141414;transition:.25s}
+nav .cta:hover{background:var(--orange);color:#333333;transition:.25s}
 @media(max-width:760px){nav{padding:12px 14px} nav .logo img{height:17px} nav ul{gap:9px} nav a{font-size:10px;letter-spacing:.08em} nav .cta{padding:7px 10px}}
 
 /* ---------- PORTAL HERO ---------- */
@@ -86,7 +86,7 @@ nav .cta:hover{background:var(--orange);color:#141414;transition:.25s}
 .hero-copy::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,1100px);height:86vh;background:radial-gradient(closest-side,rgba(20,20,20,.99) 40%,rgba(20,20,20,.92) 60%,transparent 82%);z-index:-1;pointer-events:none}
 .hero-copy h1,.hero-sub,.hero-kicker{text-shadow:0 0 18px rgba(20,20,20,.95),0 2px 40px rgba(20,20,20,.9)}
 .hero-kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--green);margin-bottom:26px}
-.hero-copy h1{font-family:var(--font-d);font-weight:600;font-size:clamp(34px,6vw,84px);line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
+.hero-copy h1{font-family:var(--font-d);font-weight:800;font-size:clamp(34px,6vw,84px);line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
 .hero-copy h1 .l2{display:block;color:#141414;-webkit-text-stroke:1.5px var(--ink)}
 .hero-copy h1 .l3{display:block;color:var(--orange)}
 .hero-sub{margin-top:30px;max-width:540px;color:var(--dim);font-size:18px;line-height:1.7}
@@ -97,7 +97,7 @@ nav .cta:hover{background:var(--orange);color:#141414;transition:.25s}
 .beyond .inner{text-align:center;max-width:760px;padding:0 24px;position:relative}
 .beyond .inner::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:130%;height:190%;background:radial-gradient(closest-side,rgba(20,20,20,.95),rgba(20,20,20,.7) 55%,transparent 78%);z-index:-1;pointer-events:none}
 .beyond .inner p{text-shadow:0 0 18px rgba(20,20,20,.95),0 2px 40px rgba(20,20,20,.9)}
-.beyond .inner p.big{font-family:var(--font-d);font-weight:400;font-size:clamp(22px,3vw,36px);line-height:1.4;text-transform:uppercase}
+.beyond .inner p.big{font-family:var(--font-d);font-weight:600;font-size:clamp(22px,3vw,36px);line-height:1.4;text-transform:uppercase}
 .beyond .inner p.big em{font-style:normal;color:var(--green)}
 .beyond .inner p.small{margin-top:22px;color:var(--dim);letter-spacing:.32em;text-transform:uppercase;font-size:11px}
 .flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:7;pointer-events:none}
@@ -109,7 +109,7 @@ section{position:relative}
 .sec-tag{display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);margin-bottom:22px}
 .sec-tag::before{content:'';width:12px;height:12px;background:var(--orange)}
 .sec-tag.g::before{background:var(--green)}
-h2{font-family:var(--font-d);font-weight:600;font-size:clamp(28px,4vw,54px);text-transform:uppercase;line-height:1.1;letter-spacing:.01em;margin-bottom:18px}
+h2{font-family:var(--font-d);font-weight:800;font-size:clamp(28px,4vw,54px);text-transform:uppercase;line-height:1.1;letter-spacing:.01em;margin-bottom:18px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .28s ease-out,transform .28s ease-out}
 .reveal.in{opacity:1;transform:none}
 
@@ -129,7 +129,7 @@ h2{font-family:var(--font-d);font-weight:600;font-size:clamp(28px,4vw,54px);text
 .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:52px 0;background:var(--bg2)}
 .marquee .track{display:flex;gap:64px;width:max-content;animation:mq 40s linear infinite}
 .marquee:hover .track{animation-play-state:paused}
-.marquee span{font-family:var(--font-d);font-weight:300;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.marquee span{font-family:var(--font-d);font-weight:400;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
 .marquee span b{color:var(--green);font-weight:300;margin-right:64px}
 @keyframes mq{to{transform:translateX(-50%)}}
 
@@ -175,13 +175,13 @@ h2{font-family:var(--font-d);font-weight:600;font-size:clamp(28px,4vw,54px);text
 
 /* ---------- QUOTE / CONTACT ---------- */
 .quote-band{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.quote-band blockquote{font-family:var(--font-d);font-weight:300;font-size:clamp(20px,2.6vw,32px);line-height:1.4;max-width:900px}
+.quote-band blockquote{font-family:var(--font-d);font-weight:400;font-size:clamp(20px,2.6vw,32px);line-height:1.4;max-width:900px}
 .quote-band blockquote em{font-style:normal;color:var(--green)}
 .quote-band cite{display:block;margin-top:26px;font-family:var(--font-b);font-style:normal;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim)}
 .contact{text-align:center}
 .contact h2 span{color:var(--orange)}
 .contact p{color:var(--dim);max-width:520px;margin:0 auto 40px;line-height:1.7}
-.btn-door{display:inline-block;position:relative;font-family:var(--font-d);font-weight:400;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:#141414;background:var(--orange);padding:20px 46px;text-decoration:none;overflow:hidden;transition:color .3s}
+.btn-door{display:inline-block;position:relative;font-family:var(--font-d);font-weight:600;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:#333333;background:var(--orange);padding:20px 46px;text-decoration:none;overflow:hidden;transition:color .3s}
 .btn-door::before{content:'';position:absolute;inset:0;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.77,0,.18,1);z-index:0}
 .btn-door:hover::before{transform:scaleX(1)}
 .btn-door span{position:relative;z-index:1}
@@ -254,7 +254,7 @@ footer a:hover{color:var(--green)}
     <div class="about-grid">
       <div class="reveal">
         <h2>Advisory that starts before the seed.</h2>
-        <p class="lead">NxGen provides <strong>customized advisory and curated introductions</strong> throughout your go-to-market phases, connecting you with investors and service providers such as market makers, DEXs, CEXs, key opinion leaders, auditors and launchpads. Through our multi-family office we invest in every founder we work with, beginning at the earliest stages.</p>
+        <p class="lead">NxGen.xyz provides <strong>customized advisory and curated introductions</strong> throughout your go-to-market phases, connecting you with investors and service providers such as market makers, DEXs, CEXs, key opinion leaders, auditors and launchpads. Through our multi-family office we invest in every founder we work with, beginning at the earliest stages.</p>
       </div>
       <div class="keys reveal">
         <div class="key"><span class="n">01</span><div><h3>Curated introductions</h3><p>Investors, market makers, DEXs, CEXs, KOLs, auditors and launchpads. The right person, at the right moment.</p></div></div>
@@ -330,7 +330,7 @@ footer a:hover{color:var(--green)}
   <div class="shell">
     <h2 class="reveal">Ready to <span>knock?</span></h2>
     <p class="reveal">Tell us where you want to go. Chances are, we already know who's on the other side of that door.</p>
-    <a class="btn-door reveal" href="mailto:hello@nxgen.xyz"><span>Open the conversation</span></a>
+    <a class="btn-door reveal" href="mailto:Investment@nxgen.xyz"><span>Open the conversation</span></a>
   </div>
 </section>
 
@@ -350,9 +350,9 @@ footer a:hover{color:var(--green)}
     <div>
       <h4>Connect</h4>
       <ul>
-        <li><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></li>
-        <li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li>
-        <li><a href="https://www.crunchbase.com" target="_blank" rel="noopener">Crunchbase</a></li>
+        <li><a href="https://www.linkedin.com/company/nxgen-xyz/about/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://twitter.com/nxgen_xyz" target="_blank" rel="noopener">Twitter</a></li>
+        <li><a href="mailto:Investment@nxgen.xyz">Investment@nxgen.xyz</a></li>
       </ul>
     </div>
   </div>
