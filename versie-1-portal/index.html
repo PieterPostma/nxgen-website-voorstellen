@@ -413,16 +413,38 @@ for (let i = 0; i < FRAMES; i++) {
   frames.push(f);
 }
 
+/* floating brand-pixel dust inside the tunnel, for depth and speed */
+const DUST = 34;
+const dust = [];
+for (let i = 0; i < DUST; i++) {
+  const d = document.createElement('div');
+  const s = 3 + Math.random() * 4;
+  const col = Math.random() < .35 ? 'var(--green)' : Math.random() < .5 ? 'var(--orange)' : 'rgba(244,242,238,.8)';
+  d.style.cssText = `position:absolute;width:${s}px;height:${s}px;background:${col};left:${8 + Math.random()*84}%;top:${8 + Math.random()*84}%;`;
+  tunnel.appendChild(d);
+  dust.push({el: d, baseZ: Math.random() * 3200});
+}
+
 const wrap = document.querySelector('.portal-wrap');
 const heroCopy = document.getElementById('heroCopy');
 const beyond = document.getElementById('beyond');
 const flash = document.getElementById('flash');
 const hint = document.querySelector('.scroll-hint');
+const gridFloor = document.querySelector('.grid-floor');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* the camera eases toward the scroll position instead of snapping to it */
+let smoothP = null;
 function tick() {
   const rect = wrap.getBoundingClientRect();
   const total = wrap.offsetHeight - innerHeight;
-  const p = Math.min(1, Math.max(0, -rect.top / total)); // 0..1 through the tunnel
+  const target = Math.min(1, Math.max(0, -rect.top / total)); // 0..1 through the tunnel
+  if (smoothP === null) smoothP = target;
+  smoothP += (target - smoothP) * (reduceMotion ? 1 : 0.09);
+  if (Math.abs(target - smoothP) < 0.0004) smoothP = target;
+  const p = smoothP;
+  // gentle cinematic sway of the whole tunnel
+  tunnel.style.transform = `rotateY(${Math.sin(p * Math.PI * 2) * 2.2}deg) rotateX(${Math.sin(p * Math.PI) * 1.4}deg)`;
   // each frame starts far away and flies past the camera
   frames.forEach((f, i) => {
     const depth = i / (FRAMES - 1);            // 0 near .. 1 far
@@ -433,6 +455,16 @@ function tick() {
     f.style.transform = `translate(-50%,-50%) translateZ(${z}px) rotate(${rot}deg)`;
     f.style.opacity = op;
   });
+  // dust recycles endlessly toward the camera
+  dust.forEach(({el, baseZ}) => {
+    const z = ((baseZ + p * 4600) % 3200) - 2850;
+    const op = z > 350 ? 0 : z > 150 ? (350 - z) / 200 : Math.max(0, (z + 2850) / 1800) * 0.85;
+    el.style.transform = `translateZ(${z}px)`;
+    el.style.opacity = op;
+  });
+  // the grid floor rushes beneath you
+  const floorShift = p * 460;
+  gridFloor.style.backgroundPosition = `0px ${floorShift}px, 0px ${floorShift}px`;
   // hero copy: recedes and fades as you push through
   const hc = Math.min(1, p / 0.42);
   heroCopy.style.opacity = 1 - hc;
@@ -440,13 +472,14 @@ function tick() {
   heroCopy.style.filter = `blur(${hc * 10}px)`;
   heroCopy.style.pointerEvents = hc > .5 ? 'none' : 'auto';
   // flash at the threshold
-  const fl = p > 0.55 && p < 0.72 ? 1 - Math.abs((p - 0.635) / 0.085) : 0;
-  flash.style.opacity = fl * 0.9;
+  const fl = p > 0.52 && p < 0.75 ? 1 - Math.abs((p - 0.635) / 0.115) : 0;
+  flash.style.opacity = fl * fl * 0.9;
   // world beyond
   const bp = Math.min(1, Math.max(0, (p - 0.66) / 0.3));
-  beyond.style.opacity = bp;
-  beyond.style.transform = `scale(${0.86 + bp * 0.14})`;
-  hint.style.opacity = p > 0.05 ? 0 : 1;
+  const be = bp < .5 ? 2*bp*bp : 1 - Math.pow(-2*bp+2, 2) / 2;
+  beyond.style.opacity = be;
+  beyond.style.transform = `scale(${0.88 + be * 0.12})`;
+  hint.style.opacity = Math.max(0, 1 - p * 14);
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
