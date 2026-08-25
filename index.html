@@ -3,53 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NxGen — 3 voorstellen</title>
+<title>NxGen.xyz | Websitevoorstel</title>
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#1a1a1a;--ink:#f2efe6;--dim:#9a978f;--green:#23d892;--orange:#f76b21;--line:rgba(242,239,230,.12)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;font-weight:300;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;font-weight:300;font-size:15px;line-height:1.6;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px}
 img.logo{height:34px;margin-bottom:36px}
-h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(28px,4vw,48px);line-height:1.1;text-align:center;margin-bottom:10px}
-h1 em{font-style:italic;color:var(--green)}
+h1{font-weight:800;font-size:clamp(28px,4vw,48px);line-height:1.1;text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--green)}
 p.sub{color:var(--dim);font-size:15px;margin-bottom:54px;text-align:center;max-width:520px;line-height:1.7}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;width:100%}
-@media(max-width:900px){.cards{grid-template-columns:1fr}}
-a.card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);border-radius:16px;padding:34px 30px;text-decoration:none;color:var(--ink);transition:.3s;background:rgba(255,255,255,.02)}
+a.card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);border-radius:16px;padding:40px 36px;text-decoration:none;color:var(--ink);transition:.3s;background:rgba(255,255,255,.02);max-width:460px;width:100%}
 a.card:hover{transform:translateY(-6px);border-color:var(--green)}
-a.card:nth-child(2):hover{border-color:var(--orange)}
 .n{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--orange)}
-a.card:nth-child(1) .n{color:var(--green)}
-h2{font-family:'Fraunces',serif;font-weight:400;font-size:26px;line-height:1.15}
+h2{font-weight:800;font-size:26px;line-height:1.15;text-transform:uppercase}
 a.card p{color:var(--dim);font-size:15px;line-height:1.6;flex:1}
 .go{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--green)}
-a.card:nth-child(2) .go{color:var(--orange)}
 </style>
 </head>
 <body>
 <img class="logo" src="assets/logo-white.svg" alt="NxGen">
-<h1>Drie voorstellen voor <em>nxgen.xyz</em></h1>
-<p class="sub">Zelfde huisstijl, zelfde content, drie totaal verschillende karakters. Klik om een versie te bekijken.</p>
-<div class="cards">
-  <a class="card" href="versie-1-portal/index.html">
-    <span class="n">Versie 1</span>
-    <h2>The Portal</h2>
-    <p>Donker en strak. Je scrolt letterlijk door een 3D-tunnel van deurframes — opgebouwd uit de pixelblokken van het logo — de wereld van NxGen in.</p>
-    <span class="go">Bekijk versie →</span>
-  </a>
-  <a class="card" href="versie-2-pixel/index.html">
-    <span class="n">Versie 2</span>
-    <h2>Pixel Door</h2>
-    <p>Licht, gedurfd en editorial. De deur is een muur van pixelblokken die bij het scrollen stuk voor stuk wegvallen en de site onthullen.</p>
-    <span class="go">Bekijk versie →</span>
-  </a>
-  <a class="card" href="versie-3-riet/index.html">
-    <span class="n">Versie 3</span>
-    <h2>The Reed Journey</h2>
-    <p>Organisch en verhalend: een reis van riet tot eindproduct in vijf hoofdstukken, met wuivend riet, een vlechtwerk en een geweven deur die opent.</p>
-    <span class="go">Bekijk versie →</span>
-  </a>
-</div>
+<h1>Voorstel voor <em>nxgen.xyz</em></h1>
+<p class="sub">Het nieuwe websitevoorstel: zelfde huisstijl, vernieuwde deur-animatie, volledig conform de branding guidelines.</p>
+<a class="card" href="versie-1-portal/index.html">
+  <span class="n">Het voorstel</span>
+  <h2>The Portal</h2>
+  <p>Donker en strak. Je scrolt letterlijk door een 3D-tunnel van deurframes, opgebouwd uit de pixelblokken van het logo, de wereld van NxGen.xyz in.</p>
+  <span class="go">Bekijk de site →</span>
+</a>
 </body>
 </html>
